@@ -14,7 +14,7 @@
 ### パラメータ形式
 + _JSON_
 ### パラメータ説明（送信）
-|JSONキー|内容説明|<div style="width:100px;">省略可|
+|JSONキー|内容説明|<div style="width:100px;">省略可</div>|
 |----|----|----|
 |_AUTH＿CODE_|_認証コード_|_不可_|
 |_CMD_|_コマンド（START_INVENTORY）_|_不可_|
@@ -35,7 +35,7 @@
 |_ACTION_|_アクション（1/INV A NOT INV B or ASRT_SL_NOT_DSRT_SL,2/INV A or ASRT SL,3/NOT INV B or NOT DSRT SL）_|_可_|
 |_TOKEN_|_当回コマンドのトークン_|_不可_|
 ### パラメータ説明（受信）
-|JSONキー|内容説明|<div style="width:100px;">省略可|
+|JSONキー|内容説明|<div style="width:100px;">省略可</div>|
 |----|----|----|
 |_AUTH＿CODE_|_認証コード_|_不可_|
 |_RSP_|_検出開始APIに送信時のコマンド（START_INVENTORY）_|_不可_|
@@ -270,7 +270,7 @@ class RfidData {
 ### パラメータ形式
 + _JSON_
 ### パラメータ説明（受信）
-|JSONキー|内容説明|<div style="width:100px;">省略可|
+|JSONキー|内容説明|<div style="width:100px;">省略可</div>|
 |----|----|----|
 |_AUTH＿CODE_|_認証コード_|_不可_|
 |_RSP_|_レスポンス、送信時のコマンド_|_不可_|
