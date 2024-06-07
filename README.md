@@ -12,6 +12,8 @@
 ない
 ### 使用例（java）
 ```java
+import com.ebs.rfid.gateway.RfidGatewayDriver;
+
 String authCode = "DEA1234FFFE69880F2BF06F";	//Gatewayの認証コード
 String redisHost = "192.168.31.100";	//redisサーバーのホスト
 int redisPort = 6379;	//redisサーバーのポート
@@ -21,6 +23,8 @@ RfidGatewayDriver gatewayDriver = new RfidGatewayDriver(redisHost, redisPort, re
 ```
 ### c#
 ```c#
+using com.ebs.rfid.gateway;
+
 string authCode = "DEA1234FFFE69880F2BF06F";    //Gatewayの認証コード
 string redisHost = "192.168.31.100";    //redisのホスト
 int redisPort = 6379;   //redisのポート
@@ -30,6 +34,8 @@ RfidGatewayDriver gatewayDriver = new RfidGatewayDriver(redisHost, redisPort, re
 ```
 ### php
 ```php
+require 'gateway.php';
+
 $authCode = "DEA1234FFFE69880F2BF06F";	//Gatewayの認証コード
 $redisHost = "192.168.31.100";	//redisサーバーのホスト
 $redisPort = 6379;	//redisサーバーのポート
