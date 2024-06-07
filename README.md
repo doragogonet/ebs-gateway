@@ -21,19 +21,52 @@ RfidGatewayDriver gatewayDriver = new RfidGatewayDriver(redisHost, redisPort, re
 ```
 ### c#
 ```c#
-
+string authCode = "DEA1234FFFE69880F2BF06F";    //Gatewayの認証コード
+string redisHost = "192.168.31.100";    //redisのホスト
+int redisPort = 6379;   //redisのポート
+string redisUser = "ebs";   //redisのユーザー
+string redisPassword = "ebsadmin";  //redisのパスワード
+RfidGatewayDriver gatewayDriver = new RfidGatewayDriver(redisHost, redisPort, redisUser, redisPassword, authCode);
 ```
 ### php
 ```php
-
+$authCode = "DEA1234FFFE69880F2BF06F";	//Gatewayの認証コード
+$redisHost = "192.168.31.100";	//redisサーバーのホスト
+$redisPort = 6379;	//redisサーバーのポート
+$redisUser = "ebs";	//redisサーバーのユーザー
+$redisPassword = "ebsadmin";	//redisサーバーのパスワード
+$gatewayDriver = new RfidGatewayDriver ();
+$gatewayDriver->init($redisHost, $redisPort, $redisUser, $redisPassword, $authCode);
 ```
 ### python
 ```python
+import gateway
 
+if __name__ == '__main__':
+    authCode = "DEA1234FFFE69880F2BF06F"	#Gatewayの認証コード
+    redisHost = "192.168.31.100"	#redisのホスト
+    redisPort = 6379	#redisのポート
+    redisUser = "ebs"	#redisのユーザー
+    redisPassword = "ebsadmin"	#redisのパスワード
+
+    gateway = gateway.Gateway(redisHost, redisPort, redisUser, redisPassword, authCode)
 ```
 ### go
 ```go
+import "./gateway"
 
+//Gatewayの認証コード
+authCode := "DEA1234FFFE69880F2BF06F"
+//redisのホスト
+redisHost := "192.168.31.100"
+//redisのポート
+redisPort := 6379
+//redisのユーザー
+redisUser := "ebs"
+//redisのパスワード
+redisPassword := "ebsadmin"
+
+gateway.InitGateway(redisHost, redisPort, redisUser, redisPassword, authCode)
 ```
 ># １、トークン取得
 ### パラメータ説明
@@ -197,7 +230,6 @@ List<RfidData> rfidDataList = gatewayDriver.getRfidDatas(jsonParam);
 ```
 ### c#
 ```c#
-
 
 ```
 ### php
