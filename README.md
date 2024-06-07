@@ -42,14 +42,13 @@ $gatewayDriver->init($redisHost, $redisPort, $redisUser, $redisPassword, $authCo
 ```python
 import gateway
 
-if __name__ == '__main__':
-    authCode = "DEA1234FFFE69880F2BF06F"	#Gatewayの認証コード
-    redisHost = "192.168.31.100"	#redisのホスト
-    redisPort = 6379	#redisのポート
-    redisUser = "ebs"	#redisのユーザー
-    redisPassword = "ebsadmin"	#redisのパスワード
+authCode = "DEA1234FFFE69880F2BF06F"	#Gatewayの認証コード
+redisHost = "192.168.31.100"	#redisのホスト
+redisPort = 6379	#redisのポート
+redisUser = "ebs"	#redisのユーザー
+redisPassword = "ebsadmin"	#redisのパスワード
 
-    gateway = gateway.Gateway(redisHost, redisPort, redisUser, redisPassword, authCode)
+gateway = gateway.Gateway(redisHost, redisPort, redisUser, redisPassword, authCode)
 ```
 ### go
 ```go
@@ -67,6 +66,18 @@ redisUser := "ebs"
 redisPassword := "ebsadmin"
 
 gateway.InitGateway(redisHost, redisPort, redisUser, redisPassword, authCode)
+```
+### js
+```js
+const Gateway = require('./gateway');
+
+var authCode = "DEA1234FFFE69880F2BF06F";	//Gatewayの認証コード
+var redisHost = "192.168.31.100";	//redisのホスト
+var redisPort = 6379;	//redisのポート
+var redisUser = "ebs";	//redisのユーザー
+var redisPassword = "ebsadmin";	//redisのパスワード
+
+var gateway = new Gateway(redisHost, redisPort, redisUser, redisPassword, authCode);
 ```
 ># １、トークン取得
 ### パラメータ説明
