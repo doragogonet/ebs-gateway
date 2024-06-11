@@ -1,4 +1,4 @@
-# Gateway SDK 説明
+# EBS-GATEWAY SDK 説明
 ># インスタンス作成
 ### パラメータ説明
 |パラメータタイプ|パラメータ説明|省略可|
@@ -15,9 +15,9 @@
 import com.ebs.rfid.gateway.RfidGatewayDriver;
 
 String authCode = "DEA1234FFFE69880F2BF06F";	//EBS-GATEWAYの認証コード
-String redisHost = "EBS-GATEWAY ip";	//redisサーバーのホスト
+String redisHost = "192.168.31.100";	//EBS-GATEWAY ip
 int redisPort = 6379;	//redisサーバーのポート
-String redisUser = "EBS-GATEWAY ユーザ";	//redisサーバーのユーザー
+String redisUser = "EBS";	//EBS-GATEWAY ユーザ
 String redisPassword = "ebsadmin";	//redisサーバーのパスワード
 RfidGatewayDriver gatewayDriver = new RfidGatewayDriver(redisHost, redisPort, redisUser, redisPassword, authCode);
 ```
@@ -26,9 +26,9 @@ RfidGatewayDriver gatewayDriver = new RfidGatewayDriver(redisHost, redisPort, re
 using com.ebs.rfid.gateway;
 
 string authCode = "DEA1234FFFE69880F2BF06F";    //EBS-GATEWAYの認証コード
-string redisHost = "EBS-GATEWAY ip";    //redisのホスト
+string redisHost = "192.168.31.100";    //EBS-GATEWAY ip
 int redisPort = 6379;   //redisのポート
-string redisUser = "EBS-GATEWAY ユーザ";   //redisのユーザー
+string redisUser = "EBS";   //EBS-GATEWAY ユーザ
 string redisPassword = "ebsadmin";  //redisのパスワード
 RfidGatewayDriver gatewayDriver = new RfidGatewayDriver(redisHost, redisPort, redisUser, redisPassword, authCode);
 ```
@@ -37,9 +37,9 @@ RfidGatewayDriver gatewayDriver = new RfidGatewayDriver(redisHost, redisPort, re
 require 'gateway.php';
 
 $authCode = "DEA1234FFFE69880F2BF06F";	//EBS-GATEWAYの認証コード
-$redisHost = "EBS-GATEWAY ip";	//redisサーバーのホスト
+$redisHost = "192.168.31.100";	//EBS-GATEWAY ip
 $redisPort = 6379;	//redisサーバーのポート
-$redisUser = "EBS-GATEWAY ユーザ";	//redisサーバーのユーザー
+$redisUser = "EBS";	//EBS-GATEWAY ユーザ
 $redisPassword = "ebsadmin";	//redisサーバーのパスワード
 $gatewayDriver = new RfidGatewayDriver();
 $gatewayDriver->init($redisHost, $redisPort, $redisUser, $redisPassword, $authCode);
@@ -49,9 +49,9 @@ $gatewayDriver->init($redisHost, $redisPort, $redisUser, $redisPassword, $authCo
 import gateway
 
 authCode = "DEA1234FFFE69880F2BF06F"	#EBS-GATEWAYの認証コード
-redisHost = "EBS-GATEWAY ip"	#redisのホスト
+redisHost = "192.168.31.100"	#EBS-GATEWAY ip
 redisPort = 6379	#redisのポート
-redisUser = "EBS-GATEWAY ユーザ"	#redisのユーザー
+redisUser = "EBS"	#EBS-GATEWAY ユーザ
 redisPassword = "ebsadmin"	#redisのパスワード
 
 gateway = gateway.Gateway(redisHost, redisPort, redisUser, redisPassword, authCode)
@@ -62,12 +62,12 @@ import "./gateway"
 
 //EBS-GATEWAYの認証コード
 authCode := "DEA1234FFFE69880F2BF06F"
-//redisのホスト
-redisHost := "EBS-GATEWAY ip"
+//EBS-GATEWAY ip
+redisHost := "192.168.31.100"
 //redisのポート
 redisPort := 6379
-//redisのユーザー
-redisUser := "EBS-GATEWAY ユーザ"
+//EBS-GATEWAY ユーザ
+redisUser := "EBS"
 //redisのパスワード
 redisPassword := "ebsadmin"
 
@@ -78,9 +78,9 @@ gateway.InitGateway(redisHost, redisPort, redisUser, redisPassword, authCode)
 const Gateway = require('./gateway');
 
 var authCode = "DEA1234FFFE69880F2BF06F";	//EBS-GATEWAYの認証コード
-var redisHost = "EBS-GATEWAY ip";	//redisのホスト
+var redisHost = "192.168.31.100";	//EBS-GATEWAY ip
 var redisPort = 6379;	//redisのポート
-var redisUser = "EBS-GATEWAY ユーザ";	//redisのユーザー
+var redisUser = "EBS";	//EBS-GATEWAY ユーザ
 var redisPassword = "ebsadmin";	//redisのパスワード
 
 var gateway = new Gateway(redisHost, redisPort, redisUser, redisPassword, authCode);
