@@ -14,10 +14,10 @@
 ```java
 import com.ebs.rfid.gateway.RfidGatewayDriver;
 
-String authCode = "DEA1234FFFE69880F2BF06F";	//Gatewayの認証コード
-String redisHost = "192.168.31.100";	//redisサーバーのホスト
+String authCode = "DEA1234FFFE69880F2BF06F";	//EBS-GATEWAYの認証コード
+String redisHost = "EBS-GATEWAY ip";	//redisサーバーのホスト
 int redisPort = 6379;	//redisサーバーのポート
-String redisUser = "ebs";	//redisサーバーのユーザー
+String redisUser = "EBS-GATEWAY ユーザ";	//redisサーバーのユーザー
 String redisPassword = "ebsadmin";	//redisサーバーのパスワード
 RfidGatewayDriver gatewayDriver = new RfidGatewayDriver(redisHost, redisPort, redisUser, redisPassword, authCode);
 ```
@@ -25,10 +25,10 @@ RfidGatewayDriver gatewayDriver = new RfidGatewayDriver(redisHost, redisPort, re
 ```c#
 using com.ebs.rfid.gateway;
 
-string authCode = "DEA1234FFFE69880F2BF06F";    //Gatewayの認証コード
-string redisHost = "192.168.31.100";    //redisのホスト
+string authCode = "DEA1234FFFE69880F2BF06F";    //EBS-GATEWAYの認証コード
+string redisHost = "EBS-GATEWAY ip";    //redisのホスト
 int redisPort = 6379;   //redisのポート
-string redisUser = "ebs";   //redisのユーザー
+string redisUser = "EBS-GATEWAY ユーザ";   //redisのユーザー
 string redisPassword = "ebsadmin";  //redisのパスワード
 RfidGatewayDriver gatewayDriver = new RfidGatewayDriver(redisHost, redisPort, redisUser, redisPassword, authCode);
 ```
@@ -36,22 +36,22 @@ RfidGatewayDriver gatewayDriver = new RfidGatewayDriver(redisHost, redisPort, re
 ```php
 require 'gateway.php';
 
-$authCode = "DEA1234FFFE69880F2BF06F";	//Gatewayの認証コード
-$redisHost = "192.168.31.100";	//redisサーバーのホスト
+$authCode = "DEA1234FFFE69880F2BF06F";	//EBS-GATEWAYの認証コード
+$redisHost = "EBS-GATEWAY ip";	//redisサーバーのホスト
 $redisPort = 6379;	//redisサーバーのポート
-$redisUser = "ebs";	//redisサーバーのユーザー
+$redisUser = "EBS-GATEWAY ユーザ";	//redisサーバーのユーザー
 $redisPassword = "ebsadmin";	//redisサーバーのパスワード
-$gatewayDriver = new RfidGatewayDriver ();
+$gatewayDriver = new RfidGatewayDriver();
 $gatewayDriver->init($redisHost, $redisPort, $redisUser, $redisPassword, $authCode);
 ```
 ### python
 ```python
 import gateway
 
-authCode = "DEA1234FFFE69880F2BF06F"	#Gatewayの認証コード
-redisHost = "192.168.31.100"	#redisのホスト
+authCode = "DEA1234FFFE69880F2BF06F"	#EBS-GATEWAYの認証コード
+redisHost = "EBS-GATEWAY ip"	#redisのホスト
 redisPort = 6379	#redisのポート
-redisUser = "ebs"	#redisのユーザー
+redisUser = "EBS-GATEWAY ユーザ"	#redisのユーザー
 redisPassword = "ebsadmin"	#redisのパスワード
 
 gateway = gateway.Gateway(redisHost, redisPort, redisUser, redisPassword, authCode)
@@ -60,14 +60,14 @@ gateway = gateway.Gateway(redisHost, redisPort, redisUser, redisPassword, authCo
 ```go
 import "./gateway"
 
-//Gatewayの認証コード
+//EBS-GATEWAYの認証コード
 authCode := "DEA1234FFFE69880F2BF06F"
 //redisのホスト
-redisHost := "192.168.31.100"
+redisHost := "EBS-GATEWAY ip"
 //redisのポート
 redisPort := 6379
 //redisのユーザー
-redisUser := "ebs"
+redisUser := "EBS-GATEWAY ユーザ"
 //redisのパスワード
 redisPassword := "ebsadmin"
 
@@ -77,15 +77,17 @@ gateway.InitGateway(redisHost, redisPort, redisUser, redisPassword, authCode)
 ```js
 const Gateway = require('./gateway');
 
-var authCode = "DEA1234FFFE69880F2BF06F";	//Gatewayの認証コード
-var redisHost = "192.168.31.100";	//redisのホスト
+var authCode = "DEA1234FFFE69880F2BF06F";	//EBS-GATEWAYの認証コード
+var redisHost = "EBS-GATEWAY ip";	//redisのホスト
 var redisPort = 6379;	//redisのポート
-var redisUser = "ebs";	//redisのユーザー
+var redisUser = "EBS-GATEWAY ユーザ";	//redisのユーザー
 var redisPassword = "ebsadmin";	//redisのパスワード
 
 var gateway = new Gateway(redisHost, redisPort, redisUser, redisPassword, authCode);
 ```
 ># １、トークン取得
+### メソッド名
+
 ### パラメータ説明
 ない
 ### 戻り値
@@ -94,25 +96,28 @@ var gateway = new Gateway(redisHost, redisPort, redisUser, redisPassword, authCo
 |_文字列_|_Gatewayから取得したトークン_|
 ### 使用例（java）
 ```java
-String token = gatewayDriver.getToken();	//当回コマンドのとケイン、自分保存してください
+String token = gatewayDriver.getToken();	//当回コマンドのトークン、自分保存してください
 ```
 ***
 ### c#
 ```c#
-
-
+string token = gatewayDriver.getToken();	
 ```
 ### php
 ```php
-
+$token = $gatewayDriver->getToken();
 ```
 ### python
 ```python
-
+token = gateway.getToken()
 ```
 ### go
 ```go
-
+token := gateway.GetToken()
+```
+### js
+```js
+var token = gateway.getToken();
 ```
 ># ２、タグ検出開始
 ### パラメータ説明
