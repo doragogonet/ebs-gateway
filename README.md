@@ -407,14 +407,39 @@ foreach ($rfidDatas as $data) {
 ```
 ### python
 ```python
-
+token = gateway.getToken()
+jsonParam = ""
+jsonParam += "{"
+jsonParam += "	\"TOKEN\":\"" + token + "\""
+jsonParam += "}"
+rfidDatas = gateway.getRfidDatas(jsonParam)
+for obj in rfidDatas:
+    print(obj.data)
+    print(obj.time)
 ```
 ### go
 ```go
-
+token := gateway.GetToken()
+jsonParam := ""
+jsonParam += "{"
+jsonParam += "	\"TOKEN\":\"" + token + "\""
+jsonParam += "}"
+rfidDatas := gateway.GetRfidDatas(jsonParam)
+for _, item := range rfidDatas {
+    fmt.Printf("Data: %v, Time: %v\n", item.Data, item.Time)
+}
 ```
 ### js
 ```js
+var token = gateway.getToken();
+jsonParam = "";
+jsonParam += "{"
+jsonParam += "	\"TOKEN\":\"" + token + "\"";
+jsonParam += "}";
+let rfidDatas = gateway.getRfidDatas(jsonParam)
+rfidDatas.forEach(item => {
+    console.log(`Data: ${item.data}, Time: ${item.time}`);
+});
 ```
 ***
 ># ５、タグRead
