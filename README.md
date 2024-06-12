@@ -147,7 +147,13 @@ String jsonParam = "" +
         "	\"TAG_ID\":\"0614141123456789\"," +
         "	\"PASSWORD\":\"00000000\"" +
         "}";
-String jsonData = gatewayDriver.tagRead(jsonParam);
+TagInfo tag = gatewayDriver.tagRead(jsonParam);
+if (tag != null) {
+        System.out.println("tid:" + tag.getTid());
+        System.out.println("epc:" + tag.getEpc());
+        System.out.println("user:" + tag.getUser());
+        System.out.println("reserved:" + tag.getReserved());
+}
 ```
 ### c#
 ```c#
