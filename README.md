@@ -5,7 +5,6 @@
 |----|----|----|
 |_文字列_|_EBS-GATEWAY ip_|_不可_|
 |_数値_|_EBS-GATEWAY ポート_|_不可_|
-|_文字列_|_EBS-GATEWAY ユーザ_|_不可_|
 |_文字列_|_EBS-GATEWAY パスワード_|_不可_|
 ### 戻り値
 ない
@@ -15,9 +14,8 @@ import com.ebs.rfid.gateway.RfidGatewayDriver;
 
 String redisHost = "192.168.31.100";	//EBS-GATEWAY ip
 int redisPort = 6379;	//EBS-GATEWAY ポート
-String redisUser = "EBS";	//EBS-GATEWAY ユーザ
 String redisPassword = "ebsadmin";	//EBS-GATEWAY パスワード
-RfidGatewayDriver gatewayDriver = new RfidGatewayDriver(redisHost, redisPort, redisUser, redisPassword);
+RfidGatewayDriver gatewayDriver = new RfidGatewayDriver(redisHost, redisPort, redisPassword);
 ```
 ### c#
 ```c#
@@ -25,9 +23,8 @@ using com.ebs.rfid.gateway;
 
 string redisHost = "192.168.31.100";    //EBS-GATEWAY ip
 int redisPort = 6379;   //EBS-GATEWAY ポート
-string redisUser = "EBS";   //EBS-GATEWAY ユーザ
 string redisPassword = "ebsadmin";  //EBS-GATEWAY パスワード
-RfidGatewayDriver gatewayDriver = new RfidGatewayDriver(redisHost, redisPort, redisUser, redisPassword);
+RfidGatewayDriver gatewayDriver = new RfidGatewayDriver(redisHost, redisPort, redisPassword);
 ```
 ***
 ># ２、タグ検出開始
