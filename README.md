@@ -183,6 +183,8 @@ tagLock
 |_IP_PORT_ANTS_|_RFIDマシンのIPとPORTとアンテナ、「:」で区切（複数の場合、「;」で区切）、アンテナが「,」で区切_|_不可_|
 |_TAG_ID_|_タグのID_|_不可_|
 |_PASSWORD_|_タグのパスワード_|_不可_|
+|_LOCK_TYPE_|_ロックタイプ（1/Lock,2/Permanent lock）_|_不可_|
+|_LOCK_TARGET_|_ロックターゲット（1/EPC,2/RESERVED,3/USER）_|_不可_|
 ### 使用例（java）
 ```java
 String jsonParam = "" +
@@ -225,6 +227,8 @@ tagUnlock、TagUnlock（goのみ）
 |_IP_PORT_ANTS_|_RFIDマシンのIPとPORTとアンテナ、「:」で区切（複数の場合、「;」で区切）、アンテナが「,」で区切_|_不可_|
 |_TAG_ID_|_タグのID_|_不可_|
 |_PASSWORD_|_タグのパスワード_|_不可_|
+|_LOCK_TYPE_|_ロックタイプ（1/Unlock,2/Permanent Unlock）_|_不可_|
+|_LOCK_TARGET_|_ロックターゲット（1/EPC,2/RESERVED,3/USER）_|_不可_|
 ### 使用例（java）
 ```java
 String jsonParam = "" +
