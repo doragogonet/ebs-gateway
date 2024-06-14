@@ -74,7 +74,14 @@ String jsonParam = "" +
         "	\"TARGET\":\"1\"," +
         "	\"ACTION\":\"1\"" +
         "}";
-ProcessHandle handle = gatewayDriver.startInventory(jsonParam);	//Inventory開始
+//Inventory開始
+ProcessHandle handle = gatewayDriver.startInventory(jsonParam,new RfidDataListener() {
+                                                        @Override
+                                                        public void onRfidData(List<RfidData> list) {
+                                                                 //検出結果取得
+                                                                System.out.println(list.size());
+                                                        }
+                                                });
 boolean result = handle.stopInventory();         //タグ検出停止
 ```
 ### c#
