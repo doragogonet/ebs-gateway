@@ -98,29 +98,10 @@ string jsonParam = "" +
         "}";
 ProcessHandle handle = gatewayDriver.startInventory(jsonParam);	//Inventory開始
 bool result = handle.stopInventory();         //タグ検出停止
+List<RfidData> rfidDataList = handle.getRfidDatas();    //検出結果取得
 ```
 ***
-># ３、検出結果の取得
-### メソッド名
-getRfidDatas
-### パラメータ説明
-ない
-### 戻り値
-|戻り値タイプ|戻り値説明|
-|----|----|
-|_RfidDataリスト_|_RFIDデータリスト_|
-### JSONパラメータ説明
-ない
-### 使用例（java）
-```java
-List<RfidData> rfidDataList = gatewayDriver.getRfidDatas();
-```
-### c#
-```c#
-List<RfidData> rfidDataList = gatewayDriver.getRfidDatas();
-```
-***
-># ４、タグRead
+># ３、タグRead
 ### メソッド名
 tagRead
 ### パラメータ説明
@@ -164,7 +145,7 @@ string jsonParam = "" +
 string jsonData = gatewayDriver.tagRead(jsonParam);
 ```
 ***
-># ５、タグLock
+># ４、タグLock
 ### メソッド名
 tagLock
 ### パラメータ説明
@@ -208,9 +189,9 @@ string jsonParam = "" +
 bool result = gatewayDriver.tagLock(jsonParam);
 ```
 ***
-># ６、タグUnlock
+># ５、タグUnlock
 ### メソッド名
-tagUnlock、TagUnlock（goのみ）
+tagUnlock
 ### パラメータ説明
 |パラメータタイプ|パラメータ説明|省略可|
 |----|----|----|
@@ -252,9 +233,9 @@ string jsonParam = "" +
 bool result = gatewayDriver.tagUnlock(jsonParam);
 ```
 ***
-># ７、タグWrite
+># ６、タグWrite
 ### メソッド名
-tagWrite、TagWrite（goのみ）
+tagWrite
 ### パラメータ説明
 |パラメータタイプ|パラメータ説明|省略可|
 |----|----|----|
@@ -269,17 +250,10 @@ tagWrite、TagWrite（goのみ）
 |_IP_PORT_ANTS_|_RFIDマシンのIPとPORTとアンテナ、「:」で区切（複数の場合、「;」で区切）、アンテナが「,」で区切_|_不可_|
 |_TAG_ID_|_タグのID_|_不可_|
 |_PASSWORD_|_タグのパスワード_|_不可_|
-|_IS_GS1_|_GS1かどうか_|_不可_|
-|_GS1_TYPE_|_GS1のタイプ（1/GDTI-96,2/GSRN-96,3/SSCC-96,4/SGTIN-96,5/SGLN-96,6/GRAI-96,7/GIAI-96,8/CPI-96,9/GSRNP-96,10/GDTI-174,11/SGTIN-198,12/SGLN-195,13/GRAI-170,14/GIAI-202）_|_可_|
-|_CODE1_|_事業者コード_|_可_|
-|_CODE2_|_商品コード_|_可_|
-|_CODE3_|_Serial Number_|_可_|
-|_MEMORY_BANK_|_メモリBank（1/EPC,2/TID,3/USER）_|_可_|
-|_DATA_|_データ（HEX）_|_可_|
-|_DATA_OFFSET_|_データのオフセットデータのオフセット_|_可_|
-|_DATA_LENGTH_|_データの長さ_|_可_|
-|_FILTER_|_フィルタ（0/All Others,1/Point of Sale (POS) Trade Item,2/Full Case forTransport,3/Reserved 3,4/Inner Pack Trade Item Grouping for Handling,5/Reserved 5,6/Unit Load,7/Unit inside Trade Item or component inside a product not intended for individual sale）_|_可_|
-|_EXTENSION_DIGIT_|_拡張番号（0～9）_|_可_|
+|_MEMORY_BANK_|_メモリBank（1/EPC,2/TID,3/USER）_|_不可_|
+|_DATA_|_データ（HEX）_|_不可_|
+|_DATA_OFFSET_|_データのオフセットデータのオフセット_|_不可_|
+|_DATA_LENGTH_|_データの長さ_|_不可_|
 ### 使用例（java）
 ```java
 String jsonParam = "" +
@@ -287,17 +261,10 @@ String jsonParam = "" +
         "	\"IP_PORT_ANTS\":\"192.168.31.100:232:1,2,3;192.168.31.101:232:1\"," +
         "	\"TAG_ID\":\"0614141123456789\"," +
         "	\"PASSWORD\":\"00000000\"," +
-        "	\"IS_GS1\":\"true\"," +
-        "	\"GS1_TYPE\":\"4\"," +
-        "	\"CODE1\":\"0614141\"," +
-        "	\"CODE2\":\"12345\"," +
-        "	\"CODE3\":\"6789\"," +
         "	\"MEMORY_BANK\":\"1\"," +
         "	\"DATA\":\"1\"," +
         "	\"DATA_OFFSET\":\"7\"," +
-        "	\"DATA_LENGTH\":\"1\"," +
-        "	\"FILTER\":\"9\"," +
-        "	\"EXTENSION_DIGIT\":\"0\"" +
+        "	\"DATA_LENGTH\":\"1\"" +
         "}";
 boolean result = gatewayDriver.tagWrite(jsonParam);	
 ```
@@ -308,20 +275,113 @@ string jsonParam = "" +
         "	\"IP_PORT_ANTS\":\"192.168.31.100:232:1,2,3;192.168.31.101:232:1\"," +
         "	\"TAG_ID\":\"0614141123456789\"," +
         "	\"PASSWORD\":\"00000000\"," +
-        "	\"IS_GS1\":\"true\"," +
-        "	\"GS1_TYPE\":\"4\"," +
-        "	\"CODE1\":\"0614141\"," +
-        "	\"CODE2\":\"12345\"," +
-        "	\"CODE3\":\"6789\"," +
         "	\"MEMORY_BANK\":\"1\"," +
         "	\"DATA\":\"1\"," +
         "	\"DATA_OFFSET\":\"7\"," +
-        "	\"DATA_LENGTH\":\"1\"," +
-        "	\"FILTER\":\"9\"," +
-        "	\"EXTENSION_DIGIT\":\"0\"" +
+        "	\"DATA_LENGTH\":\"1\"" +
         "}";
 bool result = gatewayDriver.tagWrite(jsonParam);	
 ```
 ***
-
+># ７、タグのエンコード
+### メソッド名
+epcEncode
+### パラメータ説明
+|パラメータタイプ|パラメータ説明|省略可|
+|----|----|----|
+|_文字列_|_JSONパラメータ_|_不可_|
+### 戻り値
+|戻り値タイプ|戻り値説明|
+|----|----|
+|_文字列_|_EPCのエンコード値_|
+### JSONパラメータ説明
+|JSONキー|内容説明|省略可|
+|----|----|----|
+|_GS1_TYPE_|_GS1のタイプ（1/GDTI-96,2/GSRN-96,3/SSCC-96,4/SGTIN-96,5/SGLN-96,6/GRAI-96,7/GIAI-96,8/CPI-96,9/GSRNP-96,10/GDTI-174,11/SGTIN-198,12/SGLN-195,13/GRAI-170,14/GIAI-202）_|_不可_|
+|_CODE1_|_事業者コード_|_デ可_|
+|_CODE2_|_商品コード_|_デ可_|
+|_CODE3_|_Serial Number_|_デ可_|
+|_FILTER_|_フィルタ（0/All Others,1/Point of Sale (POS) Trade Item,2/Full Case forTransport,3/Reserved 3,4/Inner Pack Trade Item Grouping for Handling,5/Reserved 5,6/Unit Load,7/Unit inside Trade Item or component inside a product not intended for individual sale）_|_デ可_|
+|_EXTENSION_DIGIT_|_拡張番号（0～9）_|_デ可_|
+### 使用例（java）
+```java
+String jsonParam = "" +
+        "{" +
+        "	\"GS1_TYPE\":\"4\"," +
+        "	\"CODE1\":\"0614141\"," +
+        "	\"CODE2\":\"12345\"," +
+        "	\"CODE3\":\"6789\"," +
+        "	\"FILTER\":\"9\"," +
+        "	\"EXTENSION_DIGIT\":\"0\"" +
+        "}";
+String result = gatewayDriver.epcEncode(jsonParam);
+```
+### c#
+```c#
+string jsonParam = "" +
+        "{" +
+        "	\"GS1_TYPE\":\"4\"," +
+        "	\"CODE1\":\"0614141\"," +
+        "	\"CODE2\":\"12345\"," +
+        "	\"CODE3\":\"6789\"," +
+        "	\"FILTER\":\"9\"," +
+        "	\"EXTENSION_DIGIT\":\"0\"" +
+        "}";
+string result = gatewayDriver.epcEncode(jsonParam);
+```
+***
+># ８、タグのデコード
+### メソッド名
+epcDecode
+### パラメータ説明
+|パラメータタイプ|パラメータ説明|省略可|
+|----|----|----|
+|_文字列_|_JSONパラメータ_|_不可_|
+### 戻り値
+|戻り値タイプ|戻り値説明|
+|----|----|
+|_文字列_|_EPCのデコード値_|
+### JSONパラメータ説明
+|JSONキー|内容説明|省略可|
+|----|----|----|
+|_GS1_TYPE_|_GS1のタイプ（1/GDTI-96,2/GSRN-96,3/SSCC-96,4/SGTIN-96,5/SGLN-96,6/GRAI-96,7/GIAI-96,8/CPI-96,9/GSRNP-96,10/GDTI-174,11/SGTIN-198,12/SGLN-195,13/GRAI-170,14/GIAI-202）_|_不可_|
+|_DATA_|_データ（HEX）_|_不可_|
+### 使用例（java）
+```java
+String jsonParam = "" +
+        "{" +
+        "	\"GS1_TYPE\":\"4\"," +
+        "	\"DATA\":\"3074257bf7194e4000001a85\"," +
+        "}";
+String result = gatewayDriver.epcDecode(jsonParam);
+```
+### c#
+```c#
+string jsonParam = "" +
+        "{" +
+        "	\"GS1_TYPE\":\"4\"," +
+        "	\"DATA\":\"3074257bf7194e4000001a85\"," +
+        "}";
+string result = gatewayDriver.epcDecode(jsonParam);
+```
+***
+># ９、インスタンス廃棄
+※当インスタンス使用しなければ必ずこのメソッドで廃棄させる
+### メソッド名
+destrory
+### パラメータ説明
+ない
+### 戻り値
+ない
+### JSONパラメータ説明
+ない
+### 使用例（java）
+```java
+gatewayDriver.destrory();
+```
+### c#
+```c#
+gatewayDriver.destrory();
+```
+***
 
