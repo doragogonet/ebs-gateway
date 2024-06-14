@@ -77,7 +77,6 @@ String jsonParam = "" +
 MyRfidDataListener listener = new MyRfidDataListener(gatewayDriver);
 //Inventory開始
 ProcessHandle handle = gatewayDriver.startInventory(jsonParam,listener);
-boolean result = handle.stopInventory();         //タグ検出停止
 class MyRfidDataListener extends RfidDataListener {
 	
 	RfidGatewayDriver gatewayDriver;
