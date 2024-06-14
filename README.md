@@ -74,15 +74,23 @@ String jsonParam = "" +
         "	\"TARGET\":\"1\"," +
         "	\"ACTION\":\"1\"" +
         "}";
+MyRfidDataListener listener = new MyRfidDataListener(gatewayDriver);
 //Inventory開始
-ProcessHandle handle = gatewayDriver.startInventory(jsonParam,new RfidDataListener() {
-                                                        @Override
-                                                        public void onRfidData(List<RfidData> list) {
-                                                                 //検出結果取得
-                                                                System.out.println(list.size());
-                                                        }
-                                                });
+ProcessHandle handle = gatewayDriver.startInventory(jsonParam,listener);
 boolean result = handle.stopInventory();         //タグ検出停止
+class MyRfidDataListener extends RfidDataListener {
+	
+	RfidGatewayDriver gatewayDriver;
+	
+	public MyRfidDataListener(RfidGatewayDriver gatewayDriver) {
+		this.gatewayDriver = gatewayDriver;
+	}
+	
+	@Override
+        public void onRfidData(int count) {
+		List<RfidData> list = this.gatewayDriver.getRfidDatas(count); //count=0の場合、全部取得
+        }
+}
 ```
 ### c#
 ```c#
@@ -389,6 +397,48 @@ gatewayDriver.destrory();
 ### c#
 ```c#
 gatewayDriver.destrory();
+```
+***
+># １０、タグ検出停止
+### メソッド名
+stopInventory
+### パラメータ説明
+ない
+### 戻り値
+|戻り値タイプ|戻り値説明|
+|----|----|
+|_ブール値_|_成功か失敗かを戻り_|
+### JSONパラメータ説明
+ない
+### 使用例（java）
+```java
+gatewayDriver.stopInventory();
+```
+### c#
+```c#
+gatewayDriver.stopInventory();
+```
+***
+># １１、検出結果取得
+### メソッド名
+getRfidDatas
+### パラメータ説明
+|パラメータタイプ|パラメータ説明|省略可|
+|----|----|----|
+|_数値_|_取得個数（0:全部）_|_不可_|
+### 戻り値
+|戻り値タイプ|戻り値説明|
+|----|----|
+|_リスト_|_RFIDデータリスト_|
+### JSONパラメータ説明
+ない
+### 使用例（java）
+```java
+List<RfidData> list = gatewayDriver.getRfidDatas(0);
+```
+### c#
+```c#
+List<RfidData> list = gatewayDriver.getRfidDatas(0);
 ```
 ***
 
