@@ -74,22 +74,15 @@ String jsonParam = "" +
         "	\"TARGET\":\"1\"," +
         "	\"ACTION\":\"1\"" +
         "}";
-MyRfidDataListener listener = new MyRfidDataListener(gatewayDriver);
 //Inventory開始
-ProcessHandle handle = gatewayDriver.startInventory(jsonParam,listener);
-class MyRfidDataListener extends RfidDataListener {
-	
-	RfidGatewayDriver gatewayDriver;
-	
-	public MyRfidDataListener(RfidGatewayDriver gatewayDriver) {
-		this.gatewayDriver = gatewayDriver;
-	}
-	
-	@Override
-        public void onRfidData(int count) {
-		List<RfidData> list = this.gatewayDriver.getRfidDatas(count); //count=0の場合、全部取得
-        }
-}
+ProcessHandle handle = gatewayDriver.startInventory(jsonParam, new RfidDataListener() {
+			
+                                                        @Override
+                                                        public void onRfidData(int count, ProcessHandle handle) {
+                                                                List<RfidData> list = handle.getRfidDatas(count); //count=0の場合、全部取得
+                                                        }
+                                                });
+
 ```
 ### c#
 ```c#
