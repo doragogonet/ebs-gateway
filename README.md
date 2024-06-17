@@ -12,7 +12,7 @@
 ```java
 import com.ebs.rfid.gateway.RfidGatewayDriver;
 
-String redisHost = "192.168.31.100";	//EBS-GATEWAY ip
+String redisHost = "192.168.X.X";	//EBS-GATEWAY ip
 int redisPort = 6379;	//EBS-GATEWAY ポート
 String redisPassword = "ebsadmin";	//EBS-GATEWAY パスワード
 RfidGatewayDriver gatewayDriver = new RfidGatewayDriver(redisHost, redisPort, redisPassword);
