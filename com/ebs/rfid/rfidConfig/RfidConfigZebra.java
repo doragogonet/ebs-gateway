@@ -9,7 +9,7 @@ import com.mot.rfid.api3.READER_TYPE;
 import com.mot.rfid.api3.ReaderManagement;
 import com.mot.rfid.api3.SECURE_MODE;
 
-public class RfidConfigZebra {
+public class RfidConfigZebra implements RfidConfig {
 	
 	private Logger logger = Logger.getLogger(RfidConfigZebra.class);
 	
@@ -26,6 +26,7 @@ public class RfidConfigZebra {
 		this.ip = ip;
 	}
 	
+	@Override
 	public boolean doConfig() {
 
 		try {

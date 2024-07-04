@@ -16,21 +16,23 @@ import com.ebs.rfid.RfidManagerApplication;
 import com.ebs.rfid.rfidRead.RfidReadZebra;
 import com.mot.rfid.api3.RFIDReader;
 
-public class CMDDataThreadZebra extends Thread {
+public class CMDDataThread extends Thread {
 
-	private Logger logger = Logger.getLogger(CMDDataThreadZebra.class);
+	private Logger logger = Logger.getLogger(CMDDataThread.class);
 	
 	private Map<String,RfidReadZebra> readerMap;
 	private Map<String,RFIDReader> driverMap;
 	private Map<String,ProcessCMDThread> processMap;
+	private Map<String,String> inventoryIpMap;
 	private List<String> workingReaderList;
 	
 	private static AtomicInteger processCount = new AtomicInteger(0);
 	
-    public CMDDataThreadZebra() throws Exception {
+    public CMDDataThread() throws Exception {
     	this.readerMap = new ConcurrentHashMap<String,RfidReadZebra>();
     	this.driverMap = new ConcurrentHashMap<String,RFIDReader>();
     	this.processMap = new ConcurrentHashMap<String,ProcessCMDThread>();
+    	this.inventoryIpMap = new ConcurrentHashMap<String,String>();
     	this.workingReaderList = Collections.synchronizedList(new ArrayList<String>());
     }
 
@@ -72,7 +74,7 @@ public class CMDDataThreadZebra extends Thread {
     		return;
     	}
     	
-    	ProcessCMDThread process = new ProcessCMDThread(cmd,token,this.readerMap,this.driverMap,this.workingReaderList);
+    	ProcessCMDThread process = new ProcessCMDThread(cmd,token,json,new ProcessCMDZebra(this.readerMap,this.driverMap,this.workingReaderList,this.inventoryIpMap));
 		//this.processMap.put(token, process);	//ProcessCMDThreadに自分にThreadを停止できるので、ここに管理しない
 		process.start();
     	

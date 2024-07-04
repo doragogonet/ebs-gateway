@@ -17,9 +17,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 
-import com.ebs.rfid.queue.CMDDataThreadZebra;
+import com.ebs.rfid.queue.CMDDataThread;
 import com.ebs.rfid.queue.RSPDataThread;
 import com.ebs.rfid.redis.RedisService;
+import com.ebs.rfid.rfidManage.RfidManage;
 import com.ebs.rfid.rfidManage.RfidManageZebra;
 import com.ebs.rfid.util.Constants;
 import com.ebs.rfid.util.PropertiesUtils;
@@ -51,7 +52,7 @@ public class RfidManagerApplication implements CommandLineRunner {
 	}
     
     public static void main(String[] args) throws InterruptedException {
-    
+    	
     	Runtime.getRuntime().addShutdownHook(
     			new Thread() {
     				public void run() {
@@ -77,7 +78,7 @@ public class RfidManagerApplication implements CommandLineRunner {
 	        	System.exit(exitCode);
 	        	break;
         	} else if (inStr.toUpperCase().startsWith("CONFIG")) {
-        		if (CMDDataThreadZebra.isWorking()) {
+        		if (CMDDataThread.isWorking()) {
         			System.out.println("Gatewayは作業中です。");
         			continue;
         		}
@@ -127,7 +128,7 @@ public class RfidManagerApplication implements CommandLineRunner {
         		String fileName = PropertiesUtils.getValue(Constants.FILE_NAME, index);
         		String filePath = PropertiesUtils.getValue(Constants.FILE_PATH, index);
         		for (int i = 0; i < ipArr.length; i++) {
-        			RfidManageZebra manage = new RfidManageZebra(userName, password, filePath + "\\" + fileName, ipArr[i]);
+        			RfidManage manage = new RfidManageZebra(userName, password, filePath + "\\" + fileName, ipArr[i]);
     	            manage.startConfig();
         		}
         	}
@@ -137,7 +138,7 @@ public class RfidManagerApplication implements CommandLineRunner {
         ExecutorService cacheThreadPool = Executors.newCachedThreadPool();
        
         //命令処理の待機スレッドを開く
-        CMDDataThreadZebra cmdTask = new CMDDataThreadZebra();
+        CMDDataThread cmdTask = new CMDDataThread();
         cacheThreadPool.execute(cmdTask);
         
         //応答処理の待機スレッドを開く

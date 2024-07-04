@@ -15,7 +15,7 @@ import com.ebs.rfid.model.TagQuery;
 import com.ebs.rfid.object.DataInfo;
 import com.ebs.rfid.object.RSPData;
 import com.ebs.rfid.queue.DataQueue;
-import com.ebs.rfid.queue.ProcessCMDThread;
+import com.ebs.rfid.queue.ProcessCMDZebra;
 import com.ebs.rfid.util.Constants;
 import com.ebs.rfid.util.PropertiesUtils;
 import com.ebs.rfid.util.Utils;
@@ -38,9 +38,9 @@ public class RfidReadZebra implements Runnable {
 	private int workDuration = 300;
 	private TagQuery query;
 	private int inventoryTimeout = 30;	//単位：秒,「0」=制限しない
-	private ProcessCMDThread process;
+	private ProcessCMDZebra process;
 	
-	public RfidReadZebra(RFIDReader driver, String ip, String token, TagQuery query, ProcessCMDThread process) throws Exception {
+	public RfidReadZebra(RFIDReader driver, String ip, String token, TagQuery query, ProcessCMDZebra process) throws Exception {
 		this.driver = driver;
 		this.ip = ip;
 		this.token = token;

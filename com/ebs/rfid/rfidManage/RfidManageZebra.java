@@ -2,9 +2,10 @@ package com.ebs.rfid.rfidManage;
 
 import org.apache.log4j.Logger;
 
+import com.ebs.rfid.rfidConfig.RfidConfig;
 import com.ebs.rfid.rfidConfig.RfidConfigZebra;
 
-public class RfidManageZebra implements Runnable {
+public class RfidManageZebra implements Runnable,RfidManage {
 
 	private Logger logger = Logger.getLogger(RfidManageZebra.class);
 
@@ -28,7 +29,7 @@ public class RfidManageZebra implements Runnable {
 	public boolean startConfig() {
 		try {
 			
-			RfidConfigZebra config = new RfidConfigZebra(this.userName, this.password, this.filePathName, this.ip);
+			RfidConfig config = new RfidConfigZebra(this.userName, this.password, this.filePathName, this.ip);
 			return config.doConfig();
 			
 		} catch (Exception e) {
