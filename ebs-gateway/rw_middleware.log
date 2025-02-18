@@ -1,0 +1,89 @@
+2025-02-02 21:26:38 [INFO] Middleware initialized with config: config.json
+2025-02-02 21:26:38 [INFO] Handler registered for event type: 5
+2025-02-02 21:26:38 [INFO] Handler registered for event type: 3
+2025-02-02 21:26:38 [ERROR] Failed to load driver: 193
+2025-02-02 21:26:38 [INFO] Event dispatcher started
+2025-02-02 22:50:06 [INFO] Middleware initialized with config: config.json
+2025-02-02 22:53:20 [INFO] Middleware initialized with config: config.json
+2025-02-02 23:11:13 [INFO] Middleware initialized with config: config.json
+2025-02-02 23:11:13 [INFO] Handler registered for event type: 5
+2025-02-02 23:11:13 [INFO] Handler registered for event type: 3
+2025-02-02 23:11:13 [ERROR] Failed to load driver: 193
+2025-02-02 23:11:37 [INFO] Middleware initialized with config: config.json
+2025-02-02 23:12:09 [INFO] Handler registered for event type: 5
+2025-02-02 23:12:23 [INFO] Handler registered for event type: 3
+2025-02-02 23:13:48 [INFO] Middleware initialized with config: config.json
+2025-02-02 23:13:49 [INFO] Handler registered for event type: 5
+2025-02-02 23:13:50 [INFO] Handler registered for event type: 3
+2025-02-02 23:16:03 [INFO] Middleware initialized with config: config.json
+2025-02-02 23:16:03 [INFO] Handler registered for event type: 5
+2025-02-02 23:16:03 [INFO] Handler registered for event type: 3
+2025-02-02 23:16:03 [ERROR] Failed to load driver: 193
+2025-02-02 23:20:14 [INFO] Middleware initialized with config: config.json
+2025-02-02 23:20:15 [INFO] Handler registered for event type: 5
+2025-02-02 23:20:16 [INFO] Handler registered for event type: 3
+2025-02-02 23:20:30 [ERROR] Failed to load driver: 193
+2025-02-02 23:22:31 [INFO] Middleware initialized with config: config.json
+2025-02-02 23:22:33 [INFO] Handler registered for event type: 5
+2025-02-02 23:22:34 [INFO] Handler registered for event type: 3
+2025-02-02 23:23:55 [ERROR] Failed to load driver: 193
+2025-02-02 23:24:36 [INFO] Middleware initialized with config: config.json
+2025-02-02 23:24:37 [INFO] Handler registered for event type: 5
+2025-02-02 23:24:37 [INFO] Handler registered for event type: 3
+2025-02-02 23:24:39 [ERROR] Failed to load driver: 193
+2025-02-02 23:45:44 [INFO] Middleware initialized with config: config.json
+2025-02-02 23:45:46 [INFO] Handler registered for event type: 5
+2025-02-02 23:45:47 [INFO] Handler registered for event type: 3
+2025-02-02 23:46:14 [ERROR] Failed to load driver: 193
+2025-02-02 23:46:14 [ERROR] Failed to load driver
+2025-02-02 23:54:21 [INFO] Middleware initialized with config: config.json
+2025-02-02 23:54:22 [INFO] Handler registered for event type: 5
+2025-02-02 23:54:23 [INFO] Handler registered for event type: 3
+2025-02-02 23:54:38 [ERROR] Failed to load driver: 193
+2025-02-02 23:54:55 [ERROR] Failed to load driver
+2025-02-03 00:05:33 [INFO] Middleware initialized with config: config.json
+2025-02-03 00:05:33 [INFO] Handler registered for event type: 5
+2025-02-03 00:05:34 [INFO] Handler registered for event type: 3
+2025-02-03 00:10:49 [INFO] Middleware initialized with config: config.json
+2025-02-03 00:10:49 [INFO] Handler registered for event type: 5
+2025-02-03 00:10:50 [INFO] Handler registered for event type: 3
+2025-02-03 00:11:00 [ERROR] Failed to load driver: 193
+2025-02-03 00:11:00 [ERROR] Failed to load driver
+2025-02-03 00:14:09 [INFO] Middleware initialized with config: config.json
+2025-02-03 00:14:09 [INFO] Handler registered for event type: 5
+2025-02-03 00:14:10 [INFO] Handler registered for event type: 3
+2025-02-03 00:14:20 [ERROR] Failed to load driver: 193
+2025-02-03 00:14:20 [ERROR] Failed to load driver
+2025-02-03 00:27:14 [INFO] Middleware initialized with config: config.json
+2025-02-03 00:27:14 [INFO] Handler registered for event type: 5
+2025-02-03 00:27:17 [INFO] Handler registered for event type: 3
+2025-02-03 00:27:53 [INFO] Driver registered: CompanyA RFID-200X
+2025-02-03 00:27:59 [INFO] Device found: RFID-001
+2025-02-03 00:28:04 [INFO] Device found: RFID-001
+2025-02-03 00:29:57 [INFO] Middleware initialized with config: config.json
+2025-02-03 00:29:57 [INFO] Handler registered for event type: 5
+2025-02-03 00:29:57 [INFO] Handler registered for event type: 3
+2025-02-03 00:29:57 [INFO] Driver registered: CompanyA RFID-200X
+2025-02-03 00:29:57 [INFO] Device found: RFID-001
+2025-02-03 00:30:02 [INFO] Device found: RFID-001
+2025-02-03 00:30:47 [INFO] Middleware initialized with config: config.json
+2025-02-03 00:30:47 [INFO] Handler registered for event type: 5
+2025-02-03 00:30:48 [INFO] Handler registered for event type: 3
+2025-02-03 00:30:48 [INFO] Driver registered: CompanyA RFID-200X
+2025-02-03 00:31:05 [INFO] Device found: RFID-001
+2025-02-03 00:31:17 [INFO] Device found: RFID-001
+2025-02-03 00:31:44 [INFO] Device found: RFID-001
+2025-02-03 00:31:57 [INFO] Device found: RFID-001
+2025-02-03 00:31:57 [INFO] Device found: RFID-001
+2025-02-03 00:32:02 [INFO] Device found: RFID-001
+2025-02-03 14:15:48 [INFO] Middleware initialized with config: config.json
+2025-02-03 14:15:48 [INFO] Handler registered for event type: 5
+2025-02-03 14:15:48 [INFO] Handler registered for event type: 3
+2025-02-03 14:15:48 [INFO] Driver registered: CompanyA RFID-200X
+2025-02-03 14:15:48 [INFO] Device found: RFID-001
+2025-02-03 14:15:53 [INFO] Device found: RFID-001
+2025-02-07 08:12:25 [INFO] Middleware initialized with config: config.json
+2025-02-07 08:12:25 [INFO] Handler registered for event type: 5
+2025-02-07 08:12:25 [INFO] Handler registered for event type: 3
+2025-02-07 08:12:25 [ERROR] Failed to load driver: 126
+2025-02-07 08:12:25 [ERROR] Failed to load driver

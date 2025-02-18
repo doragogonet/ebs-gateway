@@ -1,0 +1,44 @@
+#ifndef ASYNC_CALLBACK_H
+#define ASYNC_CALLBACK_H
+#include <winsock2.h>
+#include <windows.h>
+#include "cJSON.h"
+#include "DeviceInterface.h"
+
+// 结构体存储客户端信息
+typedef struct {
+    SOCKET client_socket;
+} ClientData;
+
+//TAG_DATA ->JSON
+void tagdata_json(G_TAG_DATA** tags, int tagCount, cJSON* response_json);
+
+// 异步回调函数
+void async_callback(ClientData* data, char* request_json);
+
+// 发送 JSON 响应
+void send_json_response(ClientData* data, cJSON* response_json);
+
+// 发送错误响应
+void send_error_response(ClientData* data, const char* error_message);
+
+// 处理 Start_Inventory_Thread 逻辑
+void handle_start_inventory_thread(ClientData* data, cJSON* request);
+
+// 处理 Stop_Inventory_Thread 逻辑
+void handle_stop_inventory_thread(ClientData* data);
+
+void handle_connect(ClientData* data, cJSON* request);
+
+void handle_read(ClientData* data, cJSON* request);
+
+
+// 初始化锁（程序启动时调用）
+void init_locks(void);
+void destroy_locks(void);
+void set_client_data(ClientData* data);
+void get_client_data(ClientData* outData);
+
+
+
+#endif // ASYNC_CALLBACK_H

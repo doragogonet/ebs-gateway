@@ -1,0 +1,23 @@
+﻿{
+  "devices": [
+    {
+      "load_driver": "c:/home/zebra_driver.dll",
+      "connection": {
+        "ip": "10.8.1.210",
+        "port": 8045,
+        "protocol": "TCP",
+        "timeout_ms": 5084
+	
+      }
+    },
+    {
+      "load_driver": "c:/home/gaos_driver.dll",
+      "connection": {
+        "ip": "10.8.1.290",
+        "port": 8045,
+        "protocol": "TCP",
+        "timeout_ms": 5084
+      }
+    }
+  ]
+}

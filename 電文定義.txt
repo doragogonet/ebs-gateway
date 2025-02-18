@@ -1,0 +1,349 @@
+
+①接続 送信
+{
+    "command": "connect",
+  "modelName":"FX9600",
+    "params": {
+        "ip": "10.8.1.210",
+        "port": 5084,
+        "timeout_ms": 5000
+    }
+}
+
+接続結果
+{
+    "status": "success",
+    "message": "Device connected successfully"
+}
+
+②切断送信
+-----------------------------------------
+{   "command": "disconnect", "modelName":"FX9600" }
+------------------------------------
+{
+    "command": "disconnect",
+   "modelName":"FX9600",
+
+}
+切断結果
+{
+    "status": "success",
+    "message": "Device disconnected"
+}
+
+
+③リーダ性能取得送信
+-------------------------------------
+{    "command": "get_capabilities", "modelName":"FX9600"}
+----------------------------------------
+{
+    "command": "get_capabilities",
+  "modelName":"FX9600",
+
+}
+結果
+{
+    "status": "success",
+    "data": {
+        "readerID": "RFID_READER_001",
+        "firmwareVersion": "v1.2.3",
+        "modelName": "ABC-RFID-9000",
+        "numAntennas": 4,
+        "numGPIs": 2,
+        "numGPOs": 2,
+        "countryCode": 156
+    }
+}
+
+④読み取り送信
+---------------------------------------------
+{    "command": "read", "modelName":"FX9600","params": { "memoryBank": "USER","byteOffset": 0,"byteCount": 16,"accessPassword": "00000000"}}
+
+{    "command": "read", "modelName":"FX9600","params": { "tagID":"E28068940000402B6915D193" , "tagIDLength": 12,"memoryBank": "USER","byteOffset": 0,"byteCount": 16,"accessPassword": "00000000"}}
+{
+    "command": "read",
+  "modelName":"FX9600",
+    "params": {
+        "tagID": "E2801160600002051890BFC3",  // 目标标签 ID，可选
+        "tagIDLength": 12,  // 标签 ID 长度
+        "memoryBank": "EPC",  // 读取区域 ["EPC", "TID", "USER", "RESERVED"]
+        "byteOffset": 0,  // 读取起始字节偏移量
+        "byteCount": 16,  // 读取字节数
+        "accessPassword": "00000000"  // 访问密码（16 进制字符串）
+    }
+}
+
+結果受信
+{
+    "status": "success",
+    "tagCount": 2,  // 读取到的标签数量
+    "data": [
+        {
+            "WAIT_OBJECT": 12345,
+            "pTagID": "E2801160600002051890BFC3",  // 标签 ID（十六进制字符串）
+            "tagIDLength": 12,
+            "PC": "3000",  // Protocol Control 字段
+            "XPC": "00000001",  // Extended Protocol Control（可选）
+            "CRC": "AABB",  // 校验码
+            "antennaID": 1,
+            "peakRSSI": -50,  // 信号强度
+            "tagSeenCount": 5,  // 识别到的次数
+            "memoryBank": "EPC",
+            "pMemoryBankData": "112233445566778899AABBCC",  // 读取数据（十六进制字符串）
+            "memoryBankDataByteOffset": 0,
+            "memoryBankDataLength": 12,
+            "phaseInfo": 180  // 信号相位信息
+        },
+        {
+            "WAIT_OBJECT": 12346,
+            "pTagID": "E2801160600002051890BFC4",
+            "tagIDLength": 12,
+            "PC": "3000",
+            "XPC": "00000002",
+            "CRC": "CCDD",
+            "antennaID": 2,
+            "peakRSSI": -48,
+            "tagSeenCount": 3,
+            "memoryBank": "TID",
+            "pMemoryBankData": "445566778899AABBCCDDEE",
+            "memoryBankDataByteOffset": 2,
+            "memoryBankDataLength": 10,
+            "phaseInfo": 172
+        }
+    ],
+    "timestamp": "2025-02-12T10:05:00Z"
+}
+
+⑤書き込む送信
+----------------------------------------------------------
+{    "command": "write",    "modelName":"FX9600", "params": {"tagID": "E20000000610990A7B087388","tagIDLength": 12,"memoryBank": "USER",          "byteOffset": 2,"pWriteData": "1122334455667788","writeDataLength": 8,"accessPassword": "00000000"}}
+
+---------------------------------------------------------
+{
+    "command": "write",
+     "modelName":"FX9600",
+    "params": {
+        "tagID": "E2801160600002051890BFC3",  // 标签 ID
+        "tagIDLength": 12,  // 标签 ID 长度（字节）
+        "memoryBank": "USER",  // 写入存储区 ["EPC", "TID", "USER", "RESERVED"]
+        "byteOffset": 2,  // 从存储区域的第 2 个字节开始写入
+        "pWriteData": "1122334455667788",  // 要写入的数据（十六进制字符串）
+        "writeDataLength": 8,  // 数据长度（字节）
+        "accessPassword": "00000000"  // 访问密码（16 进制）
+    }
+}
+
+結果受信
+{
+    "status": "success",
+    "message": "Write operation completed",
+}
+
+⑥アンテナ設定送信
+------------------------------------------------------------------
+{"command": "set_antenna","modelName":"FX9600","params": {"antennaID": 2,"transmitPowerIndex": 100}}
+------------------------------------------------------------------
+{
+    "command": "set_antenna",
+      "modelName":"FX9600",
+
+    "params": {
+        "antennaID": 1,
+        "transmitPowerIndex": 10,
+        "receiveSensitivityIndex": 5,
+        "transmitFrequencyIndex": 3,
+        "rfModeTableIndex": 2,
+        "tari": 25
+    }
+}
+
+結果受信
+{
+    "status": "success",
+    "message": "Antenna configuration updated"
+}
+
+
+⑦タグ設定送信
+---------------------------------------------------------------
+{"command": "set_tag_storage","modelName":"FX9600", "params": {"maxTagCount": 1000,"maxMemoryBankByteCount": 512,"maxTagIDByteCount": 12}}
+---------------------------------------------------------------
+{
+    "command": "set_tag_storage",
+      "modelName":"FX9600",
+
+    "params": {
+        "maxTagCount": 1000,
+        "maxMemoryBankByteCount": 512,
+        "maxTagIDByteCount": 12
+    }
+}
+
+結果受信
+{
+    "status": "success",
+    "message": "Tag storage configuration updated"
+}
+
+
+⑧トリガー設定送信
+-------------------------------------------------------------------
+{ "command": "set_trigger_type", "modelName":"FX9600","params": {"triggerType": 2,"timeout_ms": 3000,"report_n":10,"nStop":100}}
+
+-------------------------------------------------------------------
+{
+    "command": "set_trigger_type",
+      "modelName":"FX9600",
+
+    "params": {
+        "triggerType": 2,
+        "timeout_ms": 3000,
+        "report_n": 10,
+        "nStop": 1
+    }
+}
+結果受信
+{
+    "status": "success",
+    "message": "Trigger type updated"
+}
+
+
+⑨同期INVENRTOY送信
+----------------------------------------------------------------
+{"command": "start_inventory","modelName":"FX9600","params": {"timeout_ms": 3000}}
+
+--------------------------------------------------------------
+{
+    "command": "start_inventory",
+       "modelName":"FX9600",
+
+    "params": {
+        "timeout_ms": 3000  // 盘点持续时间（毫秒）
+    }
+}
+結果受信
+{
+    "status": "success",
+    "tagCount": 2,  // 读取到的标签数量
+    "data": [
+        {
+            "WAIT_OBJECT": 12345,
+            "pTagID": "E2801160600002051890BFC3",  // 标签 ID（十六进制字符串）
+            "tagIDLength": 12,
+            "PC": "3000",  // Protocol Control 字段
+            "XPC": "00000001",  // Extended Protocol Control（可选）
+            "CRC": "AABB",  // 校验码
+            "antennaID": 1,  // 读取到该标签的天线编号
+            "peakRSSI": -50,  // 信号强度
+            "tagSeenCount": 5,  // 识别到的次数
+            "memoryBank": "EPC",
+            "pMemoryBankData": "112233445566778899AABBCC",  // 读取数据（十六进制字符串）
+            "memoryBankDataByteOffset": 0,
+            "memoryBankDataLength": 12,
+            "phaseInfo": 180  // 信号相位信息
+        },
+        {
+            "WAIT_OBJECT": 12346,
+            "pTagID": "E2801160600002051890BFC4",
+            "tagIDLength": 12,
+            "PC": "3000",
+            "XPC": "00000002",
+            "CRC": "CCDD",
+            "antennaID": 2,
+            "peakRSSI": -48,
+            "tagSeenCount": 3,
+            "memoryBank": "TID",
+            "pMemoryBankData": "445566778899AABBCCDDEE",
+            "memoryBankDataByteOffset": 2,
+            "memoryBankDataLength": 10,
+            "phaseInfo": 172
+        }
+    ],
+    "timestamp": "2025-02-12T10:07:00Z"
+}
+
+（不要）
+----------------------------------------------------------
+{"command": "stop_inventory", "modelName":"FX9600"}
+----------------------------------
+{
+    "command": "stop_inventory",
+      "modelName":"FX9600",
+
+}
+{
+    "status": "success",
+    "message": "Inventory stopped"
+}
+
+⑩非同期INVENRTOY送信
+----------------------------------------------------------
+{"command": "Start_Inventory_Thread","modelName":"FX9600","params": {"timeout_ms": 3000}}
+
+----------------------------------------------------------
+
+{
+    "command": "Start_Inventory_Thread",
+    "params": {
+        "timeout_ms": 5000  // 线程运行时间（毫秒）
+    }
+}
+
+Start_Inventory_Thread 运行在 线程模式，每次检测到新标签时，
+都会触发回调 TagProcessingCallback，因此 JSON 需要支持 流式数据推送（如 WebSocket 或 HTTP 长连接）。
+每次检测到标签时，返回如下 JSON：
+{
+    "status": "running",
+    "tagCount": 1,  // 每次回调仅返回新检测到的标签数量
+    "data": [
+        {
+            "WAIT_OBJECT": 12347,
+            "pTagID": "E2801160600002051890BFC5",
+            "tagIDLength": 12,
+            "PC": "3000",
+            "XPC": "00000003",
+            "CRC": "EEFF",
+            "antennaID": 3,
+            "peakRSSI": -52,
+            "tagSeenCount": 1,
+            "memoryBank": "EPC",
+            "pMemoryBankData": "99AABBCCDDEEFF00112233",
+            "memoryBankDataByteOffset": 0,
+            "memoryBankDataLength": 12,
+            "phaseInfo": 175
+        }
+    ],
+    "timestamp": "2025-02-12T10:10:00Z"
+}
+
+当 Stop_Inventory_Thread() 被调用时，返回以下 JSON：
+{
+    "status": "stopped",
+    "message": "Inventory thread stopped successfully",
+    "totalTags": 15,  // 线程运行期间读取到的标签总数
+    "timestamp": "2025-02-12T10:15:00Z"
+}
+
+****************************************/
+
+⑪非同期INVENRTOY停止
+--------------------------
+{"command": "Stop_Inventory_Thread","modelName":"FX9600"}
+--------------------------
+{
+    "command": "Stop_Inventory_Thread",
+      "modelName":"FX9600",
+
+}
+
+結果受信
+{
+    "status": "success",
+    "message": "Inventory thread stopped successfully",
+}
+
+
+
+
+

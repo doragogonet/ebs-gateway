@@ -1,0 +1,37 @@
+#pragma once
+#include <windows.h>
+#include "rfidapi.h"
+#include "DeviceInterface.h"
+
+static RFID_HANDLE32 readerHandle;
+
+
+static bool isConnected = false;
+static int TransferTagDataToGArray(const TAG_DATA* pSourceTag, G_TAG_DATA*** ppDestTags, int* pTagCount);
+static int zebra_read(LPG_READ_ACCESS_PARAMS param, G_TAG_DATA*** tags, int* tagCount);
+
+static int start_inventory(G_TAG_DATA*** tags, int* tagCount, uint32_t timeout_ms);
+static int stop_inventory(void);
+static int zebra_close(void);
+
+static TAG_STORAGE_SETTINGS tagStorageSettings;
+
+static HANDLE stopTestingEventHandle = NULL;
+
+struct ThreadParams {
+    TagProcessingCallback callback;
+    uint32_t timeout_ms;
+};
+
+typedef void (*TagProcessingCallback)(G_TAG_DATA* pTagData);
+
+bool Start_Inventory_Thread(TagProcessingCallback callback);
+void Stop_Inventory_Thread(void);
+
+
+
+
+
+
+
+

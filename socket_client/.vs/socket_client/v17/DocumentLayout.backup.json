@@ -1,0 +1,37 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\home\\\u4E2D\u9593\u4EF6\\socket_client\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{D23F9D9E-AE60-4155-8D2F-B2D78B09324D}|socket_client.vcxproj|C:\\home\\\u4E2D\u9593\u4EF6\\socket_client\\socket_client.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{D23F9D9E-AE60-4155-8D2F-B2D78B09324D}|socket_client.vcxproj|solutionrelative:socket_client.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "socket_client.cpp",
+              "DocumentMoniker": "C:\\home\\\u4E2D\u9593\u4EF6\\socket_client\\socket_client.cpp",
+              "RelativeDocumentMoniker": "socket_client.cpp",
+              "ToolTip": "C:\\home\\\u4E2D\u9593\u4EF6\\socket_client\\socket_client.cpp",
+              "RelativeToolTip": "socket_client.cpp",
+              "ViewState": "AgIAAE0AAAAAAAAAAAAMwFoAAAARAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-02-13T11:39:45.288Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

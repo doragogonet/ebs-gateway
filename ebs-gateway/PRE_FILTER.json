@@ -1,0 +1,15 @@
+﻿{
+  "memoryBank": 1,
+  "pTagPattern": [101, 102, 103, 104],
+  "tagPatternBitCount": 32,
+  "bitOffset": 16,
+  "filterAction": 2,
+  "target": 0,
+  "filterActionParams": {
+    "stateAwareParams": 42
+    // 如果使用 stateUnawareAction，则可以改为：
+    // "stateUnawareAction": 42
+  }
+}
+
+

@@ -1,0 +1,14 @@
+﻿  driver_zebra.cpp
+C:\home\中間件\ebs-gateway\zebra\zebra\driver_zebra.cpp(294,54): warning C4101: 'transmitFrequencyIndex': ローカル変数は 1 度も使われていません。
+C:\home\中間件\ebs-gateway\zebra\zebra\driver_zebra.cpp(294,29): warning C4101: 'receiveSensitivityIndex': ローカル変数は 1 度も使われていません。
+C:\home\中間件\ebs-gateway\zebra\zebra\driver_zebra.cpp(338,3): warning C4477: 'snprintf' : 書式文字列 '%02X' には、型 'unsigned int' の引数が必要ですが、可変個引数 1 は型 'UINT8 *' です
+C:\home\中間件\ebs-gateway\zebra\zebra\driver_zebra.cpp(338,3): warning C4313: 'snprintf': 書式文字列内の '%X' が引数 1 ('UINT8 *' 型) と競合しています
+C:\home\中間件\ebs-gateway\zebra\zebra\driver_zebra.cpp(338,3): warning C4477: 'snprintf' : 書式文字列 '%02X' には、型 'unsigned int' の引数が必要ですが、可変個引数 10 は型 'UINT8 *' です
+C:\home\中間件\ebs-gateway\zebra\zebra\driver_zebra.cpp(338,3): warning C4313: 'snprintf': 書式文字列内の '%X' が引数 10 ('UINT8 *' 型) と競合しています
+C:\home\中間件\ebs-gateway\zebra\zebra\driver_zebra.cpp(468,41): warning C4273: 'get_device_interface': dll リンケージが一貫していません。
+      C:\home\中間件\ebs-gateway\zebra\zebra\DeviceInterface.h(232,42):
+      'get_device_interface' の以前の定義を確認してください
+  
+  zebra.vcxproj -> C:\home\中間件\ebs-gateway\zebra\zebra\x64\Debug\zebra.dll
+  'pwsh.exe' は、内部コマンドまたは外部コマンド、
+  操作可能なプログラムまたはバッチ ファイルとして認識されていません。

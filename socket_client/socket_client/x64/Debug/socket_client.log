@@ -1,0 +1,7 @@
+﻿  socket_client.cpp
+C:\home\中間件\socket_client\socket_client.cpp(25,51): warning C4267: '引数': 'size_t' から 'int' に変換しました。データが失われているかもしれません。
+C:\home\中間件\socket_client\socket_client.cpp(29,23): warning C4018: '<': signed と unsigned の数値を比較しようとしました。
+C:\home\中間件\socket_client\socket_client.cpp(96,53): warning C4267: '引数': 'size_t' から 'int' に変換しました。データが失われているかもしれません。
+  socket_client.vcxproj -> C:\home\中間件\socket_client\x64\Debug\socket_client.exe
+  'pwsh.exe' は、内部コマンドまたは外部コマンド、
+  操作可能なプログラムまたはバッチ ファイルとして認識されていません。
