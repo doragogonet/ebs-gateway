@@ -1,5 +1,24 @@
-# WebSocket/Socket通信JSON電文（複数RFIDリーダー対応）
+# 展開手順
+## driver.json設定方法
+### 必要なファイルと構成
+以下のファイルが必要です。
+####	ebs-gateway.exe - サービスとして動作するメインプログラム
+####	driver.json - 各RFIDリーダーDLLの設定ファイル
+#### 	関連DLL - 各メーカーのデバイスドライバが含まれるDLLファイ
+```
+{
+  "socket-port": 9001,  //ソケット接続ポート
+  "HMAC-KEY": "EBS-GATEWAY-2025-02-14", //暗号化キー
+  "devices": [
+    "C:\\home\\zebra.dll",　//zebraリーダーデバイスDLL
+    "C:\\home\\maker1.dll",
+    "C:\\home\\maker2.dll"
+  ]
+}
 
+
+
+# WebSocket/Socket通信JSON電文（複数RFIDリーダー対応）
 ## 目次
 1. **接続管理**  
 2. **デバイス能力の問い合わせ**  
