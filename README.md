@@ -11,9 +11,9 @@
 8. **GS1規格変換**  
 
 -----------------------------------------
-```
 ## 1. 接続管理
 ### 1.1 デバイス接続（C→S）
+```
 {
     "command": "connect",
     "modelName": "FX9600",
@@ -23,35 +23,45 @@
         "timeout_ms": 5000
     }
 }
+```
 
 ### 1.2 接続応答（S→C）
+```
 {
     "status": "success",
     "message": "デバイスが正常に接続されました"
 }
+```
 
 ### 1.3 接続切断（C→S）
+```
 {
     "command": "disconnect",
     "modelName": "FX9600"
 }
+```
 
 ### 1.4 切断応答（S→C）
+```
 {
     "status": "success",
     "message": "デバイスが切断されました"
 }
+```
 
 -----------------------------------------
 
 ## 2. デバイス能力の問い合わせ
 ### 2.1 能力取得リクエスト（C→S）
+```
 {
     "command": "get_capabilities",
     "modelName": "FX9600"
 }
+```
 
 ### 2.2 能力応答（S→C）
+```
 {
     "status": "success",
     "data": {
@@ -64,12 +74,14 @@
         "countryCode": 392
     }
 }
+```
 
 -----------------------------------------
 
 ## 3. タグの読み書き操作
 
 ### 3.1 タグデータ読み取り（C→S）
+```
 
 {
     "command": "read",
@@ -84,7 +96,9 @@
         "timeout_ms": 3000
     }
 }
+```
 ### 3.2 読み取り応答（S→C）
+```
 
 {
     "status": "success",
@@ -105,8 +119,10 @@
         }
     ]
 }
+```
 
 ### 3.3 タグデータ書き込み（C→S）
+```
 {
     "command": "write",
     "modelName": "FX9600",
@@ -121,17 +137,21 @@
         "timeout_ms": 3000
     }
 }
+```
 
 
 ### 3.4 書き込み応答（S→C）
+```
 {
     "status": "success",
     "message": "write successfully"
 }
+```
 
 -----------------------------------------
 ## 4. アンテナ設定
 ### 4.1 アンテナパラメータ設定（C→S）
+```
 {
     "command": "set_antenna",
     "modelName": "FX9600",
@@ -144,17 +164,20 @@
         "tari": 25
     }
 }
+```
 
 ### 4.2 アンテナパラメータ設定応答（S→C）
-
+```
 {
     "status": "success",
     "message": "Antenna configuration updated"
 }
+```
 
 
 
 ### 4.3 個別アンテナ状態取得（C→S）
+```
 
 {
     "command": "get_antenna",
@@ -163,8 +186,10 @@
         "antennaID": 1
     }
 }
+```
 ### 4.4 個別アンテナ状態取得応答（S→C）
 
+```
 {
     "status": "success",
     "data": {
@@ -176,9 +201,11 @@
         "tari": 0
     }
 }
+```
 
 ## 5. タグストレージ設定
 ### 5.1 ストレージパラメータ設定（C→S）
+```
 {
     "command": "set_tag_storage",
     "modelName": "FX9600",
@@ -188,14 +215,18 @@
         "maxTagIDByteCount": 12
     }
 }
+```
 ### 5.2 ストレージパラメータ設定応答（S→C）
+```
 {
     "status": "success",
     "message": "tagStorage configuration updated"
 }
+```
 
 ## 6. トリガーモード設定
 ### 6.1 トリガータイプ設定（C→S）
+```
 {
     "command": "set_trigger_type",
     "modelName": "FX9600",
@@ -206,16 +237,20 @@
         "nStop": 100
     }
 }
+```
 ### 6.1 トリガータイプ設定応答（S→C）
+```
 {
     "status": "success",
     "message": "Trigger type updated"
 }
+```
 
 
 
 ## 7. インベントリ
 ### 7.1 開始（C→S）
+```
 {
     "command": "start_inventory",
     "modelName": "FX9600",
@@ -224,10 +259,12 @@
 		"memoryBank":"EPC"
     }
 }
+```
 ### 7.2 応答（S→C）
 
 トリガー設定条件とStop_Inventory_Thread発行まで
 下記JSON電文を繰り返し送信される。
+```
 {
     "status": "success",
     "tagCount": 13,
@@ -261,30 +298,38 @@
 				...
 		]
 }
+```
 
 ### 7.3 インベントリー停止（C→S）
+```
 {
     "command": "stop_inventory",
     "modelName": "FX9600"
 }
+```
 
 ### 7.4 応答（S→C）
+```
 {
     "status": "success",
     "message": "Inventory thread stopped successfully"
 }
+```
 
 
 ## 8. GS1規格変換
 ### 8.1 デコード変換
 リクエスト
+```
 {
     "command": "decode",
     "params":{
 	"epc":"30352BD3640C0E40000F4B6C"
 	} 
 }
+```
 レスポンス
+```
 {
     "status": "success",
    "data":{ 
@@ -297,9 +342,11 @@
     }
 
 }
+```
 ### 8.1 エンコード変換
 リクエスト
 
+```
 {
     "command": "encode",
    "params":{ 
@@ -310,10 +357,13 @@
         "item_ref": 12345,
         "serial": 1002348 }    
 }
+```
 レスポンス
+```
 {
     "status": "success",
     "data": {
         "epc": "30352BD3640C0E40000F4B6C"
     }
 }
+```
