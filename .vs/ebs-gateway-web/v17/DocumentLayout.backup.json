@@ -1,0 +1,372 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\home\\\u4E2D\u9593\u4EF6\\ebs-gateway-web\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{64D074EA-F20B-4C63-8B6B-677C2AD306F6}|ebs-gateway-web.vcxproj|C:\\home\\\u4E2D\u9593\u4EF6\\ebs-gateway-web\\websocket.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{64D074EA-F20B-4C63-8B6B-677C2AD306F6}|ebs-gateway-web.vcxproj|solutionrelative:websocket.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{64D074EA-F20B-4C63-8B6B-677C2AD306F6}|ebs-gateway-web.vcxproj|C:\\home\\\u4E2D\u9593\u4EF6\\ebs-gateway-web\\winservice.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{64D074EA-F20B-4C63-8B6B-677C2AD306F6}|ebs-gateway-web.vcxproj|solutionrelative:winservice.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{64D074EA-F20B-4C63-8B6B-677C2AD306F6}|ebs-gateway-web.vcxproj|C:\\home\\\u4E2D\u9593\u4EF6\\ebs-gateway-web\\inventory.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{64D074EA-F20B-4C63-8B6B-677C2AD306F6}|ebs-gateway-web.vcxproj|solutionrelative:inventory.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\home\\\u4E2D\u9593\u4EF6\\ebs-gateway-web\\zebra\\zebra\\driver_zebra.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:zebra\\zebra\\driver_zebra.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\home\\\u4E2D\u9593\u4EF6\\ebs-gateway-web\\zebra\\zebra\\ReaderEvent.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:zebra\\zebra\\ReaderEvent.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{64D074EA-F20B-4C63-8B6B-677C2AD306F6}|ebs-gateway-web.vcxproj|C:\\home\\\u4E2D\u9593\u4EF6\\ebs-gateway-web\\read.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{64D074EA-F20B-4C63-8B6B-677C2AD306F6}|ebs-gateway-web.vcxproj|solutionrelative:read.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{64D074EA-F20B-4C63-8B6B-677C2AD306F6}|ebs-gateway-web.vcxproj|C:\\home\\\u4E2D\u9593\u4EF6\\ebs-gateway-web\\write.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{64D074EA-F20B-4C63-8B6B-677C2AD306F6}|ebs-gateway-web.vcxproj|solutionrelative:write.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{64D074EA-F20B-4C63-8B6B-677C2AD306F6}|ebs-gateway-web.vcxproj|C:\\home\\\u4E2D\u9593\u4EF6\\ebs-gateway-web\\include\\DeviceInterface.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{64D074EA-F20B-4C63-8B6B-677C2AD306F6}|ebs-gateway-web.vcxproj|solutionrelative:include\\DeviceInterface.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{64D074EA-F20B-4C63-8B6B-677C2AD306F6}|ebs-gateway-web.vcxproj|C:\\home\\\u4E2D\u9593\u4EF6\\ebs-gateway-web\\asyncfunc.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{64D074EA-F20B-4C63-8B6B-677C2AD306F6}|ebs-gateway-web.vcxproj|solutionrelative:asyncfunc.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{64D074EA-F20B-4C63-8B6B-677C2AD306F6}|ebs-gateway-web.vcxproj|C:\\home\\\u4E2D\u9593\u4EF6\\ebs-gateway-web\\capabilities.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{64D074EA-F20B-4C63-8B6B-677C2AD306F6}|ebs-gateway-web.vcxproj|solutionrelative:capabilities.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{64D074EA-F20B-4C63-8B6B-677C2AD306F6}|ebs-gateway-web.vcxproj|C:\\home\\\u4E2D\u9593\u4EF6\\ebs-gateway-web\\set_reader.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{64D074EA-F20B-4C63-8B6B-677C2AD306F6}|ebs-gateway-web.vcxproj|solutionrelative:set_reader.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{64D074EA-F20B-4C63-8B6B-677C2AD306F6}|ebs-gateway-web.vcxproj|C:\\home\\\u4E2D\u9593\u4EF6\\ebs-gateway-web\\connect.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{64D074EA-F20B-4C63-8B6B-677C2AD306F6}|ebs-gateway-web.vcxproj|solutionrelative:connect.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{64D074EA-F20B-4C63-8B6B-677C2AD306F6}|ebs-gateway-web.vcxproj|C:\\home\\\u4E2D\u9593\u4EF6\\ebs-gateway-web\\cJSON.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{64D074EA-F20B-4C63-8B6B-677C2AD306F6}|ebs-gateway-web.vcxproj|solutionrelative:cJSON.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{64D074EA-F20B-4C63-8B6B-677C2AD306F6}|ebs-gateway-web.vcxproj|C:\\home\\\u4E2D\u9593\u4EF6\\ebs-gateway-web\\antenna.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{64D074EA-F20B-4C63-8B6B-677C2AD306F6}|ebs-gateway-web.vcxproj|solutionrelative:antenna.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{64D074EA-F20B-4C63-8B6B-677C2AD306F6}|ebs-gateway-web.vcxproj|C:\\home\\\u4E2D\u9593\u4EF6\\ebs-gateway-web\\async_func.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{64D074EA-F20B-4C63-8B6B-677C2AD306F6}|ebs-gateway-web.vcxproj|solutionrelative:async_func.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{64D074EA-F20B-4C63-8B6B-677C2AD306F6}|ebs-gateway-web.vcxproj|C:\\home\\\u4E2D\u9593\u4EF6\\ebs-gateway-web\\lockclient.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{64D074EA-F20B-4C63-8B6B-677C2AD306F6}|ebs-gateway-web.vcxproj|solutionrelative:lockclient.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\home\\\u4E2D\u9593\u4EF6\\ebs-gateway-web\\zebra\\zebra\\logger.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:zebra\\zebra\\logger.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{64D074EA-F20B-4C63-8B6B-677C2AD306F6}|ebs-gateway-web.vcxproj|C:\\home\\\u4E2D\u9593\u4EF6\\ebs-gateway-web\\logger.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{64D074EA-F20B-4C63-8B6B-677C2AD306F6}|ebs-gateway-web.vcxproj|solutionrelative:logger.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{64D074EA-F20B-4C63-8B6B-677C2AD306F6}|ebs-gateway-web.vcxproj|C:\\home\\\u4E2D\u9593\u4EF6\\ebs-gateway-web\\client_manager.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{64D074EA-F20B-4C63-8B6B-677C2AD306F6}|ebs-gateway-web.vcxproj|solutionrelative:client_manager.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{64D074EA-F20B-4C63-8B6B-677C2AD306F6}|ebs-gateway-web.vcxproj|C:\\home\\\u4E2D\u9593\u4EF6\\ebs-gateway-web\\config.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{64D074EA-F20B-4C63-8B6B-677C2AD306F6}|ebs-gateway-web.vcxproj|solutionrelative:config.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{64D074EA-F20B-4C63-8B6B-677C2AD306F6}|ebs-gateway-web.vcxproj|C:\\home\\\u4E2D\u9593\u4EF6\\ebs-gateway-web\\config.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{64D074EA-F20B-4C63-8B6B-677C2AD306F6}|ebs-gateway-web.vcxproj|solutionrelative:config.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\crt\\src\\vcruntime\\gs_report.c||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 21,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "write.cpp",
+              "DocumentMoniker": "C:\\home\\\u4E2D\u9593\u4EF6\\ebs-gateway-web\\write.cpp",
+              "RelativeDocumentMoniker": "write.cpp",
+              "ToolTip": "C:\\home\\\u4E2D\u9593\u4EF6\\ebs-gateway-web\\write.cpp",
+              "RelativeToolTip": "write.cpp",
+              "ViewState": "AgIAAGAAAAAAAAAAAAAAAGsAAAAwAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-02-24T02:45:22.911Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "ReaderEvent.cpp",
+              "DocumentMoniker": "C:\\home\\\u4E2D\u9593\u4EF6\\ebs-gateway-web\\zebra\\zebra\\ReaderEvent.cpp",
+              "RelativeDocumentMoniker": "zebra\\zebra\\ReaderEvent.cpp",
+              "ToolTip": "C:\\home\\\u4E2D\u9593\u4EF6\\ebs-gateway-web\\zebra\\zebra\\ReaderEvent.cpp",
+              "RelativeToolTip": "zebra\\zebra\\ReaderEvent.cpp",
+              "ViewState": "AgIAAEIAAAAAAAAAAAAowGMAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-02-24T02:10:10.4Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "driver_zebra.cpp",
+              "DocumentMoniker": "C:\\home\\\u4E2D\u9593\u4EF6\\ebs-gateway-web\\zebra\\zebra\\driver_zebra.cpp",
+              "RelativeDocumentMoniker": "zebra\\zebra\\driver_zebra.cpp",
+              "ToolTip": "C:\\home\\\u4E2D\u9593\u4EF6\\ebs-gateway-web\\zebra\\zebra\\driver_zebra.cpp",
+              "RelativeToolTip": "zebra\\zebra\\driver_zebra.cpp",
+              "ViewState": "AgIAAOwAAAAAAAAAAAAowPUAAAARAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-02-22T12:37:51.559Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "antenna.cpp",
+              "DocumentMoniker": "C:\\home\\\u4E2D\u9593\u4EF6\\ebs-gateway-web\\antenna.cpp",
+              "RelativeDocumentMoniker": "antenna.cpp",
+              "ToolTip": "C:\\home\\\u4E2D\u9593\u4EF6\\ebs-gateway-web\\antenna.cpp",
+              "RelativeToolTip": "antenna.cpp",
+              "ViewState": "AgIAALUAAAAAAAAAAADwv8UAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-02-22T10:28:10.462Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "cJSON.c",
+              "DocumentMoniker": "C:\\home\\\u4E2D\u9593\u4EF6\\ebs-gateway-web\\cJSON.c",
+              "RelativeDocumentMoniker": "cJSON.c",
+              "ToolTip": "C:\\home\\\u4E2D\u9593\u4EF6\\ebs-gateway-web\\cJSON.c",
+              "RelativeToolTip": "cJSON.c",
+              "ViewState": "AgIAAIoHAAAAAAAAAAAlwJUHAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000423|",
+              "WhenOpened": "2025-02-22T07:36:12.99Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "DeviceInterface.h",
+              "DocumentMoniker": "C:\\home\\\u4E2D\u9593\u4EF6\\ebs-gateway-web\\include\\DeviceInterface.h",
+              "RelativeDocumentMoniker": "include\\DeviceInterface.h",
+              "ToolTip": "C:\\home\\\u4E2D\u9593\u4EF6\\ebs-gateway-web\\include\\DeviceInterface.h",
+              "RelativeToolTip": "include\\DeviceInterface.h",
+              "ViewState": "AgIAAMgAAAAAAAAAAADwv9UAAABiAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2025-02-21T07:58:15.09Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "logger.h",
+              "DocumentMoniker": "C:\\home\\\u4E2D\u9593\u4EF6\\ebs-gateway-web\\zebra\\zebra\\logger.h",
+              "RelativeDocumentMoniker": "zebra\\zebra\\logger.h",
+              "ToolTip": "C:\\home\\\u4E2D\u9593\u4EF6\\ebs-gateway-web\\zebra\\zebra\\logger.h",
+              "RelativeToolTip": "zebra\\zebra\\logger.h",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAALAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2025-02-21T07:56:27.342Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "logger.h",
+              "DocumentMoniker": "C:\\home\\\u4E2D\u9593\u4EF6\\ebs-gateway-web\\logger.h",
+              "RelativeDocumentMoniker": "logger.h",
+              "ToolTip": "C:\\home\\\u4E2D\u9593\u4EF6\\ebs-gateway-web\\logger.h",
+              "RelativeToolTip": "logger.h",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2025-02-21T07:53:21.813Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "set_reader.cpp",
+              "DocumentMoniker": "C:\\home\\\u4E2D\u9593\u4EF6\\ebs-gateway-web\\set_reader.cpp",
+              "RelativeDocumentMoniker": "set_reader.cpp",
+              "ToolTip": "C:\\home\\\u4E2D\u9593\u4EF6\\ebs-gateway-web\\set_reader.cpp",
+              "RelativeToolTip": "set_reader.cpp",
+              "ViewState": "AgIAAC0AAAAAAAAAAAAAADEAAAAHAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-02-20T11:28:25.332Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "capabilities.cpp",
+              "DocumentMoniker": "C:\\home\\\u4E2D\u9593\u4EF6\\ebs-gateway-web\\capabilities.cpp",
+              "RelativeDocumentMoniker": "capabilities.cpp",
+              "ToolTip": "C:\\home\\\u4E2D\u9593\u4EF6\\ebs-gateway-web\\capabilities.cpp",
+              "RelativeToolTip": "capabilities.cpp",
+              "ViewState": "AgIAAC0AAAAAAAAAAAAAADoAAABEAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-02-20T10:59:34.864Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "read.cpp",
+              "DocumentMoniker": "C:\\home\\\u4E2D\u9593\u4EF6\\ebs-gateway-web\\read.cpp",
+              "RelativeDocumentMoniker": "read.cpp",
+              "ToolTip": "C:\\home\\\u4E2D\u9593\u4EF6\\ebs-gateway-web\\read.cpp",
+              "RelativeToolTip": "read.cpp",
+              "ViewState": "AgIAABsAAAAAAAAAAAAAACcAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-02-20T10:54:45.962Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "asyncfunc.cpp",
+              "DocumentMoniker": "C:\\home\\\u4E2D\u9593\u4EF6\\ebs-gateway-web\\asyncfunc.cpp",
+              "RelativeDocumentMoniker": "asyncfunc.cpp",
+              "ToolTip": "C:\\home\\\u4E2D\u9593\u4EF6\\ebs-gateway-web\\asyncfunc.cpp",
+              "RelativeToolTip": "asyncfunc.cpp",
+              "ViewState": "AgIAAFkAAAAAAAAAAAAYwGMAAAA0AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-02-20T06:31:24.409Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "lockclient.cpp",
+              "DocumentMoniker": "C:\\home\\\u4E2D\u9593\u4EF6\\ebs-gateway-web\\lockclient.cpp",
+              "RelativeDocumentMoniker": "lockclient.cpp",
+              "ToolTip": "C:\\home\\\u4E2D\u9593\u4EF6\\ebs-gateway-web\\lockclient.cpp",
+              "RelativeToolTip": "lockclient.cpp",
+              "ViewState": "AgIAAEEAAAAAAAAAAAAQwFAAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-02-20T00:38:36.735Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "winservice.cpp",
+              "DocumentMoniker": "C:\\home\\\u4E2D\u9593\u4EF6\\ebs-gateway-web\\winservice.cpp",
+              "RelativeDocumentMoniker": "winservice.cpp",
+              "ToolTip": "C:\\home\\\u4E2D\u9593\u4EF6\\ebs-gateway-web\\winservice.cpp",
+              "RelativeToolTip": "winservice.cpp",
+              "ViewState": "AgIAAD8AAAAAAAAAAAAUwEMAAAAuAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-02-19T22:46:28.18Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 21,
+              "Title": "gs_report.c",
+              "DocumentMoniker": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\crt\\src\\vcruntime\\gs_report.c",
+              "RelativeDocumentMoniker": "..\\..\\..\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\crt\\src\\vcruntime\\gs_report.c",
+              "ToolTip": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\crt\\src\\vcruntime\\gs_report.c",
+              "RelativeToolTip": "..\\..\\..\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.42.34433\\crt\\src\\vcruntime\\gs_report.c",
+              "ViewState": "AgIAANAAAAAAAAAAAAASwNsAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000423|",
+              "WhenOpened": "2025-02-18T13:06:32.142Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 20,
+              "Title": "config.h",
+              "DocumentMoniker": "C:\\home\\\u4E2D\u9593\u4EF6\\ebs-gateway-web\\config.h",
+              "RelativeDocumentMoniker": "config.h",
+              "ToolTip": "C:\\home\\\u4E2D\u9593\u4EF6\\ebs-gateway-web\\config.h",
+              "RelativeToolTip": "config.h",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAPAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2025-02-18T09:10:49.389Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "inventory.cpp",
+              "DocumentMoniker": "C:\\home\\\u4E2D\u9593\u4EF6\\ebs-gateway-web\\inventory.cpp",
+              "RelativeDocumentMoniker": "inventory.cpp",
+              "ToolTip": "C:\\home\\\u4E2D\u9593\u4EF6\\ebs-gateway-web\\inventory.cpp",
+              "RelativeToolTip": "inventory.cpp",
+              "ViewState": "AgIAADoAAAAAAAAAAAAowEQAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-02-18T09:08:17.031Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "connect.cpp",
+              "DocumentMoniker": "C:\\home\\\u4E2D\u9593\u4EF6\\ebs-gateway-web\\connect.cpp",
+              "RelativeDocumentMoniker": "connect.cpp",
+              "ToolTip": "C:\\home\\\u4E2D\u9593\u4EF6\\ebs-gateway-web\\connect.cpp",
+              "RelativeToolTip": "connect.cpp",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAACUAAAAfAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-02-18T09:08:07.88Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "client_manager.cpp",
+              "DocumentMoniker": "C:\\home\\\u4E2D\u9593\u4EF6\\ebs-gateway-web\\client_manager.cpp",
+              "RelativeDocumentMoniker": "client_manager.cpp",
+              "ToolTip": "C:\\home\\\u4E2D\u9593\u4EF6\\ebs-gateway-web\\client_manager.cpp",
+              "RelativeToolTip": "client_manager.cpp",
+              "ViewState": "AgIAACEAAAAAAAAAAAAAACkAAAAUAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-02-18T09:07:37.902Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
+              "Title": "config.cpp",
+              "DocumentMoniker": "C:\\home\\\u4E2D\u9593\u4EF6\\ebs-gateway-web\\config.cpp",
+              "RelativeDocumentMoniker": "config.cpp",
+              "ToolTip": "C:\\home\\\u4E2D\u9593\u4EF6\\ebs-gateway-web\\config.cpp",
+              "RelativeToolTip": "config.cpp",
+              "ViewState": "AgIAAO8AAAAAAAAAAAAmwPsAAAAVAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-02-18T09:07:36.184Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "async_func.h",
+              "DocumentMoniker": "C:\\home\\\u4E2D\u9593\u4EF6\\ebs-gateway-web\\async_func.h",
+              "RelativeDocumentMoniker": "async_func.h",
+              "ToolTip": "C:\\home\\\u4E2D\u9593\u4EF6\\ebs-gateway-web\\async_func.h",
+              "RelativeToolTip": "async_func.h",
+              "ViewState": "AgIAAC0AAAAAAAAAAAAAADAAAAAEAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2025-02-18T09:07:10.529Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "websocket.cpp",
+              "DocumentMoniker": "C:\\home\\\u4E2D\u9593\u4EF6\\ebs-gateway-web\\websocket.cpp",
+              "RelativeDocumentMoniker": "websocket.cpp",
+              "ToolTip": "C:\\home\\\u4E2D\u9593\u4EF6\\ebs-gateway-web\\websocket.cpp",
+              "RelativeToolTip": "websocket.cpp",
+              "ViewState": "AgIAABoAAAAAAAAAAADgvyUAAAAaAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-02-18T08:07:18.612Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

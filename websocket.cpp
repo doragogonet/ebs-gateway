@@ -1,0 +1,278 @@
+﻿#include <stdio.h>
+#include <stdlib.h>
+#include <winsock2.h>
+#include <string.h>
+#include <windows.h>
+#include "cJSON.h"
+#include "async_func.h"
+
+#pragma comment(lib, "ws2_32.lib")
+
+extern DeviceInterface devs[MAX_DEVICES];
+extern int dev_count;
+extern int socket_port;
+
+
+// WebSocket GUID for handshake
+#define WEBSOCKET_GUID "258EAFA5-E914-47DA-95CA-C5AB0DC85B11"
+
+// Base64 encoding
+#include <openssl/sha.h>
+#include <openssl/pem.h>
+#include <openssl/bio.h>
+#include <openssl/evp.h>
+
+
+#include <windows.h>
+#include <stdio.h>
+#include <wchar.h>
+
+#define DRIVER_CONF  "%s\\driver.json"
+
+//外部设定文件加载
+void get_config(void) {
+    char exe_path[MAX_PATH];
+    char config_path[MAX_PATH];
+
+    // 実行ファイルのフルパスを取得
+    if (GetModuleFileNameA(NULL, exe_path, MAX_PATH) == 0) {
+        wprintf(L"Failed to get module path\n");
+        return;
+    }
+
+    // 最後の `\` を探す
+    char* last_slash = strrchr(exe_path, '\\');
+    if (last_slash) {
+        *last_slash = '\0';  // ファイル名を削除
+    }
+
+    // 設定ファイルのパスを生成
+    snprintf(config_path, MAX_PATH, DRIVER_CONF, exe_path);
+
+    device_open(config_path);  // 初始化设备
+}
+
+
+
+// Base64 解码
+int base64_decode(const char* input, unsigned char* output, size_t* output_len) {
+    BIO* bio, * b64;
+    int decodeLen = 0;
+
+    b64 = BIO_new(BIO_f_base64());
+    bio = BIO_new_mem_buf(input, -1);
+    bio = BIO_push(b64, bio);
+    BIO_set_flags(bio, BIO_FLAGS_BASE64_NO_NL);
+    decodeLen = BIO_read(bio, output, *output_len);
+    BIO_free_all(bio);
+
+    if (decodeLen > 0) {
+        *output_len = decodeLen;
+        return 0;
+    }
+    return -1;
+}
+
+// Base64 加码
+char* base64_encode(const unsigned char* input, int length) {
+    BIO* bio, * b64;
+    BUF_MEM* bufferPtr;
+
+    b64 = BIO_new(BIO_f_base64());
+    bio = BIO_new(BIO_s_mem());
+    bio = BIO_push(b64, bio);
+
+    BIO_set_flags(bio, BIO_FLAGS_BASE64_NO_NL);
+    BIO_write(bio, input, length);
+    BIO_flush(bio);
+    BIO_get_mem_ptr(bio, &bufferPtr);
+
+    char* b64text = (char*)malloc(bufferPtr->length + 1);
+    memcpy(b64text, bufferPtr->data, bufferPtr->length);
+    b64text[bufferPtr->length] = '\0';
+
+    BIO_free_all(bio);
+
+    return b64text;
+}
+
+// Generate WebSocket accept key
+char* generate_websocket_accept_key(const char* client_key) {
+    char concatenated[256];
+    strcpy(concatenated, client_key);
+    strcat(concatenated, WEBSOCKET_GUID);
+
+    unsigned char hash[SHA_DIGEST_LENGTH];
+    SHA1((unsigned char*)concatenated, strlen(concatenated), hash);
+
+    return base64_encode(hash, SHA_DIGEST_LENGTH);
+}
+
+// 线程处理 WebSocket 客户端请求
+DWORD WINAPI handle_websocket_client(LPVOID lpParam) {
+    ClientData* data = (ClientData*)lpParam;
+    char buffer[BUFFER_SIZE];
+
+    //------------------------------------------
+    DevsLock();
+    //------------------------------------------
+    //最初バッファーにあるデータを処理する。
+    if (data->websocket != 1) {
+        async_func(data, data->inibuffer);
+    }
+
+    while (data->connected) {
+        memset(buffer, 0, BUFFER_SIZE);
+        int bytes_received = recv(data->client_socket, buffer, BUFFER_SIZE, 0);
+        if (bytes_received > 0) {
+            if (data->websocket == 1) {
+                char* payload = NULL;
+                int payload_len = parse_websocket_frame(buffer, bytes_received, &payload);
+                // 处理payload
+                async_func(data, payload);
+                free(payload);
+            }
+            else {
+                async_func(data, buffer);
+            }
+        }else{
+            printf("Client disconnected (socket: %d)\n", data->client_socket);
+            break;
+        }
+    }
+
+    // 🔴 クリーンアップ処理
+    closesocket(data->client_socket);  // ソケットを閉じる
+    data->connected = 0;  // フラグを更新
+    free(data);  // メモリを解放
+
+    //------------------------------------------
+    DevsUnlock();
+    //------------------------------------------
+
+    return 0;
+}
+
+DWORD WINAPI socketMain(LPVOID lpParam) {
+
+    get_config();
+    InitializeDevsLock();        // 初始化加锁操作
+
+    WSADATA wsa;
+    SOCKET server_socket, client_socket;
+    struct sockaddr_in server_addr, client_addr;
+    int client_addr_len = sizeof(client_addr);
+
+    if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0) {
+        printf("WSAStartup failed\n");
+        return 1;
+    }
+
+    server_socket = socket(AF_INET, SOCK_STREAM, 0);
+    if (server_socket == INVALID_SOCKET) {
+        printf("Socket creation failed\n");
+        return 1;
+    }
+
+    server_addr.sin_family = AF_INET;
+    server_addr.sin_addr.s_addr = INADDR_ANY;
+    if(!socket_port){
+        socket_port = PORT;
+    }
+    server_addr.sin_port = htons(socket_port);
+
+    int send_buf_size = 65536;
+    setsockopt(server_socket, SOL_SOCKET, SO_SNDBUF, (char*)&send_buf_size, sizeof(send_buf_size));
+
+    if (bind(server_socket, (struct sockaddr*)&server_addr, sizeof(server_addr)) == SOCKET_ERROR) {
+        printf("Bind failed\n");
+        return 1;
+    }
+
+    if (listen(server_socket, 5) == SOCKET_ERROR) {
+        printf("Listen failed\n");
+        return 1;
+    }
+    printf("Socket server listening on port %d...\n", socket_port);
+
+    while (1) {
+        client_socket = accept(server_socket, (struct sockaddr*)&client_addr, &client_addr_len);
+        if (client_socket == INVALID_SOCKET) {
+            continue;
+        }
+
+        ClientData* client_data = (ClientData*)malloc(sizeof(ClientData));
+        client_data->client_socket = client_socket;
+        client_data->client_addr = client_addr;
+        client_data->connected = 1;
+        client_data->websocket = 1; //WEBSOCKET通信
+
+        char buffer[BUFFER_SIZE];
+        int bytes_received = recv(client_socket, buffer, sizeof(buffer) - 1, 0);
+        if (bytes_received <= 0) {
+            printf("Client disconnected (socket: %d)\n", client_socket);
+            continue;
+        }
+        //区别socket和websocket
+        if (strstr(buffer, "Upgrade: websocket") == NULL) {
+            printf("TCP Socket client connected\n");
+            //tcp接续·
+            client_data->websocket = 0;
+            //开始收信报文保存
+            memset(client_data->inibuffer, 0, BUFFER_SIZE);
+            memcpy(client_data->inibuffer,buffer, BUFFER_SIZE);
+        }
+
+        if (client_data->websocket == 1) {
+            char* key_start = strstr(buffer, "Sec-WebSocket-Key: ");
+            if (!key_start) {
+                closesocket(client_socket);
+                continue;
+            }
+
+            key_start += strlen("Sec-WebSocket-Key: ");
+            char* key_end = strstr(key_start, "\r\n");
+            if (!key_end) {
+                closesocket(client_socket);
+                continue;
+            }
+
+            *key_end = '\0';
+
+            char* accept_key = generate_websocket_accept_key(key_start);
+
+            char response[BUFFER_SIZE];
+            snprintf(response, sizeof(response),
+                "HTTP/1.1 101 Switching Protocols\r\n"
+                "Upgrade: websocket\r\n"
+                "Connection: Upgrade\r\n"
+                "Sec-WebSocket-Accept: %s\r\n\r\n",
+                accept_key);
+
+            printf("WebSocket client connected\n");
+
+            send(client_socket, response, strlen(response), 0);
+            free(accept_key);
+        }
+
+        HANDLE threadHandle = CreateThread(NULL, 0, handle_websocket_client, client_data, 0, NULL);
+        if (threadHandle == NULL) {
+            closesocket(client_socket);
+            free(client_data);
+        }
+        else {
+            CloseHandle(threadHandle);
+        }
+    }
+
+    closesocket(server_socket);
+    WSACleanup();
+
+    //结束加锁
+    deleteDevsLock();
+    // 释放DLL内存
+    free_driver_list();
+    
+    
+    return 0;
+}

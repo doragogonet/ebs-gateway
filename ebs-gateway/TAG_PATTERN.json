@@ -1,9 +1,0 @@
-﻿{
-  "memoryBank": 1,            // 枚举值，根据实际情况可取值 "EPC"、"TID"、"USER" "RESERVED"
-  "bitOffset": 32,                // 位偏移值
-  "pTagPattern": "A1B2C3",        // 标签模式数据，示例中以十六进制字符串表示
-  "tagPatternBitCount": 24,       // 标签模式的位数
-  "pTagMask": "FF00FF",           // 标签掩码数据，示例中以十六进制字符串表示
-  "tagMaskBitCount": 24,          // 标签掩码的位数
-}
-

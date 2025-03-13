@@ -1,2 +1,0 @@
-C:\home\中間件\socket_client\x64\Debug\libcrypto-3-x64.dll
-C:\home\中間件\socket_client\socket_client\x64\Debug\socket_c.2758EBB6.Up2Date
