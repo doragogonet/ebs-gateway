@@ -1,4 +1,4 @@
-
+﻿
 #include "logger.h"
 
 void rw_log(LogLevel level, const char* format, ...);

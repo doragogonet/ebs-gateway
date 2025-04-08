@@ -9,10 +9,13 @@
 
 
 // 
-void set_antenna(ClientData* data, cJSON* request) {
-    cJSON* modelName = cJSON_GetObjectItem(request, "modelName");
-    if (!modelName || !cJSON_IsString(modelName)) {
-        send_error_response(data, "Missing or invalid 'modelName'");
+void ClientReader::set_antenna(cJSON* request) {
+
+    ClientData* c = (ClientData*)(this->client);
+
+    cJSON* id = cJSON_GetObjectItem(request, "id");
+    if (!id || !cJSON_IsString(id)) {
+        c->send_error_response("Missing or invalid 'id'", "");
         return;
     }
     /**
@@ -29,7 +32,7 @@ void set_antenna(ClientData* data, cJSON* request) {
     **/
     cJSON* params = cJSON_GetObjectItem(request, "params");
     if (!params) {
-        send_error_response(data, "Missing 'params' field");
+        c->send_error_response("Missing 'params' field",id->valuestring);
         return;
     }
 
@@ -60,36 +63,50 @@ void set_antenna(ClientData* data, cJSON* request) {
         antennaConfig.tari = tari->valueint;
 
 
-    // 设备读取
-    DeviceInterface dev;
-
-    // 发现设备
-    int discovered = discover(modelName->valuestring, &dev);
-    if (-1 == discovered) {
-        send_error_response(data, "Device not found or LOCK");
+    //リーダーに接続したかチェック
+    if (!this->reader) return;
+    
+   // if (!this->reader->dll_isOpen()) {
+    if(!reader->isOpen()){
+        c->send_error_response(utf16_to_utf8(L"リーダーに接続されていません。"), id->valuestring);
         return;
     }
 
-    int result = dev.set_antenna(&antennaConfig);
+    //使用中かどうかチェック
+    if (this->reader->getUse()) {
+        c->send_error_response(utf16_to_utf8(L"リーダーが使用中です。"), id->valuestring);
+        return;
+    }
+
+    //リーダを利用開始する.
+    this->reader->assign();
+    int result = this->reader->set_antenna(&antennaConfig);
+    //リーダを利用終了する.
+    this->reader->release();
+
     if (result != 0) {
-        send_error_response(data, "antennaConfig operation failed");
+        c->send_error_response("antennaConfig operation failed",id->valuestring);
         return;
     }
     // 生成 JSON 响应
     cJSON* response_json = cJSON_CreateObject();
     cJSON_AddStringToObject(response_json, "status", "success");
+    cJSON_AddStringToObject(response_json, "id", id->valuestring);
     cJSON_AddStringToObject(response_json, "message", "Antenna configuration updated");
     //对客户端送信
-    send_json_response(data, response_json);
+    c->send_json_response(response_json);
 }
 
 
 
 // 
-void get_antenna(ClientData* data, cJSON* request) {
-    cJSON* modelName = cJSON_GetObjectItem(request, "modelName");
-    if (!modelName || !cJSON_IsString(modelName)) {
-        send_error_response(data, "Missing or invalid 'modelName'");
+void ClientReader::get_antenna(cJSON* request) {
+
+    ClientData* client = (ClientData*)(this->client);
+
+    cJSON* id = cJSON_GetObjectItem(request, "id");
+    if (!id || !cJSON_IsString(id)) {
+        client->send_error_response("Missing or invalid 'id'", "");
         return;
     }
     /**
@@ -106,7 +123,7 @@ void get_antenna(ClientData* data, cJSON* request) {
     **/
     cJSON* params = cJSON_GetObjectItem(request, "params");
     if (!params) {
-        send_error_response(data, "Missing 'params' field");
+        client->send_error_response("Missing 'params' field",id->valuestring);
         return;
     }
 
@@ -119,23 +136,36 @@ void get_antenna(ClientData* data, cJSON* request) {
     if (antennaID)
         antennaConfig.antennaID = antennaID->valueint;
 
-    // 设备读取
-    DeviceInterface dev;
-
-    // 发现设备
-    int discovered = discover(modelName->valuestring, &dev);
-    if (-1 == discovered) {
-        send_error_response(data, "Device not found or LOCK");
+    //リーダーに接続したかチェック
+    if (!this->reader) return;
+    if (!this->reader) {
+        client->send_error_response(utf16_to_utf8(L"リーダーに接続されていません。"), id->valuestring);
+        return;
+    }
+    if (!reader->isOpen()) {
+        client->send_error_response(utf16_to_utf8(L"リーダーに接続されていません。"), id->valuestring);
         return;
     }
 
-    int result = dev.get_antenna(&antennaConfig);
+    //使用中かどうかチェック
+    if (this->reader->getUse()) {
+        client->send_error_response(utf16_to_utf8(L"リーダーが使用中です。"), id->valuestring);
+        return;
+    }
+
+    //リーダを利用開始する.
+    this->reader->assign();
+    int result = this->reader->get_antenna((LPG_AntennaConfig)(&antennaConfig));
+    //リーダを利用終了する.
+    this->reader->release();
+
     if (result != 0) {
-        send_error_response(data, "antennaConfig operation failed");
+        client->send_error_response("antennaConfig operation failed",id->valuestring);
         return;
     }
     cJSON* root = cJSON_CreateObject();
     cJSON_AddStringToObject(root, "status", "success");
+    cJSON_AddStringToObject(root, "id", id->valuestring);
     cJSON* response_json = cJSON_CreateObject();
     cJSON_AddNumberToObject(response_json, "antennaID", antennaConfig.antennaID);
     cJSON_AddNumberToObject(response_json, "transmitPowerIndex", antennaConfig.transmitPowerIndex);
@@ -147,34 +177,48 @@ void get_antenna(ClientData* data, cJSON* request) {
     cJSON_AddItemToObject(root, "data", response_json);
 
     //对客户端送信
-    send_json_response(data, root);
+    client->send_json_response(root);
 
 }
 
 
 
+void ClientReader::get_antenna_pro(cJSON* request) {
 
-void get_antenna_pro(ClientData* data, cJSON* request) {
-    cJSON* modelName = cJSON_GetObjectItem(request, "modelName");
-    if (!modelName || !cJSON_IsString(modelName)) {
-        send_error_response(data, "Missing or invalid 'modelName'");
+    ClientData* client = (ClientData*)(this->client);
+
+    cJSON* id = cJSON_GetObjectItem(request, "id");
+    if (!id || !cJSON_IsString(id)) {
+        client->send_error_response("Missing or invalid 'id'", "");
         return;
     }
-    // 设备读取
-    DeviceInterface dev;
 
-    // 发现设备
-    int discovered = discover(modelName->valuestring, &dev);
-    if (-1 == discovered) {
-        send_error_response(data, "Device not found or LOCK");
+    //リーダーに接続したかチェック
+    if (!this->reader) return;
+
+    if (!(this->reader->isOpen)()) {
+        client->send_error_response("リーダーに接続されていません。", id->valuestring);
         return;
     }
+
+    //使用中かどうかチェック
+    if (this->reader->getUse()) {
+        client->send_error_response("リーダーが使用中です。", id->valuestring);
+        return;
+    }
+
 
     G_ANTENNA_PRO pro;
     memset(&pro, 0, sizeof(G_ANTENNA_PRO));
-    int result = dev.get_antenna_pro(&pro);
+
+    //リーダを利用開始する.
+    this->reader->assign();
+    int result = (this->reader->get_antenna_pro)(&pro);
+    //リーダを利用終了する.
+    this->reader->release();
+
     if (result != 0) {
-        send_error_response(data, "get_antenna_pro operation failed");
+        client->send_error_response("get_antenna_pro operation failed",id->valuestring);
         return;
     }
 
@@ -182,6 +226,7 @@ void get_antenna_pro(ClientData* data, cJSON* request) {
     cJSON* root = cJSON_CreateObject();
     // 构造 JSON 响应
     cJSON_AddStringToObject(root, "status", "success");
+    cJSON_AddStringToObject(root, "id", id->valuestring);
     cJSON_AddNumberToObject(root, "numAntennas", pro.numAntennas);
     cJSON* antennaArray = cJSON_CreateArray();
 
@@ -200,6 +245,6 @@ void get_antenna_pro(ClientData* data, cJSON* request) {
     }
     cJSON_AddItemToObject(root, "antennas", antennaArray);
     //对客户端送信
-    send_json_response(data, root);
+    client->send_json_response(root);
 
 }

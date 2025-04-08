@@ -1,16 +1,19 @@
 ﻿#pragma once
-
+// バージョン v2.0
 #include <windows.h>
 #include <stdint.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <wchar.h>
+#include <string>
+
 
 // 连接配置
 typedef struct {
-    const TCHAR *ip;
+	char id[MAX_PATH + 1];
+	const TCHAR *ip;
     UINT32 port;
-    UINT32 timeout_ms;
+	UINT32 timeout_ms;
 } ConnectionConfig;
 
 // 标签存储配置
@@ -171,6 +174,7 @@ typedef enum _G_STOP_TRIGGER_TYPE
 }G_STOP_TRIGGER_TYPE;
 
 
+
 //リーダーシステムINFO
 typedef struct _G_READER_SYSTEM_INFO
 {
@@ -193,84 +197,30 @@ typedef struct _G_READER_SYSTEM_INFO
 } G_READER_SYSTEM_INFO, * LPG_READER_SYSTEM_INFO;
 
 
-
-
 #define    RFID_ERROR_INVALID_PARAM  -1000
 #define    RFID_ERROR_MEMORY_ALLOC   -1100
 
+class IRFIDReader;
+typedef IRFIDReader* (*PFN_CreateRFIDReader)(void *server);
+typedef void (*PFN_DestroyRFIDReader)(IRFIDReader* reader);
+typedef void (*TagProcessingCallback)(const char* id,void* lpclient, G_TAG_DATA** tags, int tagCount);
 
-typedef void (*TagProcessingCallback)(G_TAG_DATA** tags, int tagCount);
-
-/* ====================== 设备接口定义 ====================== */
-typedef struct DeviceInterface {
-    /* ----------------------------
-     * 基础设备操作
-     * ---------------------------- */
-     // 打开/关闭设备
-    int (*open)(ConnectionConfig *ctx);
-    int (*close)(void );
-    
-    // 数据读写
-    int (*read)(LPG_READ_ACCESS_PARAMS param,G_TAG_DATA*** tags,int *tagCount, uint32_t timeout_ms);
-    int (*write)(LPG_WRITE_ACCESS_PARAMS param, uint32_t timeout_ms);
-		
-	// 天线配置
-	int (*set_antenna)(LPG_AntennaConfig config);
-	int (*get_antenna)(LPG_AntennaConfig config);
-	int (*get_antenna_pro)(G_ANTENNA_PRO *pro);
-
-	// 标签存储
-    int (*set_tag_storage)(G_TagStorageConfig TagStorage);
-	int (*get_tag_storage)(G_TagStorageConfig* TagStorage);
-
-    //能力查询
-    int (*get_capabilities)(G_READER_CAPS* caps);
-	int (*get_systeminfo)(G_READER_SYSTEM_INFO* sys);
-
-	//触发器TYPE
-	void (*set_trigger_type)(uint16_t triggerType, uint32_t timeout_ms, uint16_t report_n, uint16_t nStop);
-
-    /* ----------------------------
-     * Inventory操作
-     * ---------------------------- */
-     int (*start_inventory)(G_TAG_DATA*** tags,int *tagCount, G_MEMORY_BANK* memoryBank, uint32_t timeout_ms);
-     int (*stop_inventory)(void);
-     bool (*Start_Inventory_Thread)(TagProcessingCallback callback, G_MEMORY_BANK* memoryBank, uint32_t timeout_ms);
-     int (*Stop_Inventory_Thread)(void);
-     
-    /* ----------------------------
-     * Windows同步对象
-     * ---------------------------- */
-    CRITICAL_SECTION lock;       // 临界区锁
-    HANDLE hMutex;               // 互斥体（可选）
-	int status;
+//DLLドライバー保存する構造体
+typedef struct deviceInterface {
+	/* ----------------------------
+	 * 设备配置
+	 * ---------------------------- */
+	const char* manufacturer;
+	const char* model_name;
+	const char* protocol_version;
 	
-    
-    /* ----------------------------
-     * 设备配置
-     * ----------------------------   */ 
-    const char* manufacturer;   // 制造商
-    const char* model_name;     // 型号名称
-	const char* protocol_version; //版本
-
+	PFN_CreateRFIDReader pfnCreateRFIDReader;
+	PFN_DestroyRFIDReader pfnDestroyRFIDReader;
+	
 	//调用驱动DLL的句柄
-	HMODULE hModule ;
-	
+	HMODULE hModule;
 
-} DeviceInterface;
-
-
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-	__declspec(dllimport)  DeviceInterface* get_device_interface(void);
-
-#ifdef __cplusplus
-}
-#endif
-
+}DeviceInterface;
 
 
 

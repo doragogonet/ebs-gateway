@@ -1,4 +1,4 @@
-﻿//#include <winsock2.h>
+﻿#include <winsock2.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -14,7 +14,6 @@
 #define BUFFER_SIZE 1024
 // 全体で使ったリーダー複数のRFIDReaderインスタンスを保持する
 std::vector<ClientReader*> g_readers;
-
 
 // RFIDReaderを追加する
 void addRFIDReader(ClientReader* reader) {
@@ -50,6 +49,216 @@ void ClearReaders(){
 
 
 
+bool is_valid_utf8(const char* str, size_t len) {
+    size_t i = 0;
+    while (i < len) {
+        if ((str[i] & 0x80) == 0x00) { // 1-byte: 0xxxxxxx
+            i++;
+        }
+        else if ((str[i] & 0xE0) == 0xC0) { // 2-byte: 110xxxxx
+            if (i + 1 >= len || (str[i + 1] & 0xC0) != 0x80) return false;
+            i += 2;
+        }
+        else if ((str[i] & 0xF0) == 0xE0) { // 3-byte: 1110xxxx
+            if (i + 2 >= len || (str[i + 1] & 0xC0) != 0x80 || (str[i + 2] & 0xC0) != 0x80) return false;
+            i += 3;
+        }
+        else if ((str[i] & 0xF8) == 0xF0) { // 4-byte: 11110xxx
+            if (i + 3 >= len || (str[i + 1] & 0xC0) != 0x80 || (str[i + 2] & 0xC0) != 0x80 || (str[i + 3] & 0xC0) != 0x80) return false;
+            i += 4;
+        }
+        else {
+            return false; // 非法起始字节
+        }
+    }
+    return true;
+}
+
+void build_websocket_frame(const char* data, uint64_t len, char** frame, uint64_t* frame_len) {
+    // サーバからの送信なのでマスクキーは不要、最大ヘッダ長は10バイト
+    *frame = (char*)malloc(len + 14);
+    if (*frame == NULL) {
+        fprintf(stderr, "Memory allocation failed\n");
+        return;
+    }
+
+    (*frame)[0] = 0x81;  // FIN + テキストフレーム
+
+    int header_len;
+    if (len <= 125) {
+        (*frame)[1] = (uint8_t)len;  // マスクビットはセットせず、長さのみ
+        header_len = 2;
+    }
+    else if (len <= 65535) {
+        (*frame)[1] = 126;
+        *(uint16_t*)(&(*frame)[2]) = htons((uint16_t)len);
+        header_len = 4;
+    }
+    else {
+        (*frame)[1] = 127;
+        uint64_t network_len = htonll(len);
+        memcpy(&(*frame)[2], &network_len, 8);
+        header_len = 10;
+    }
+
+    memcpy(*frame + header_len, data, len);
+    *frame_len = header_len + len;
+}
+
+
+
+
+/***deepseek
+void build_websocket_frame(const char* data, uint64_t len, char** frame, uint64_t* frame_len) {
+    // 分配内存时预留掩码密钥空间（4 字节）
+    *frame = (char*)malloc(len + 14);  // 最大帧头 14 字节（10+4）
+    if (*frame == NULL) {
+        fprintf(stderr, "Memory allocation failed\n");
+        return;
+    }
+
+    (*frame)[0] = 0x81;  // FIN + Text Frame
+
+    // 生成随机 4 字节掩码密钥
+    uint8_t mask[4];
+    for (int i = 0; i < 4; i++) {
+        mask[i] = rand() % 256;  // 伪随机，实际应使用更安全的随机源
+    }
+
+    // 设置掩码位和负载长度
+    int header_len;
+    if (len <= 125) {
+        (*frame)[1] = 0x80 | (uint8_t)len;  // 掩码位 + 长度
+        header_len = 6;  // 2 字节帧头 + 4 字节掩码
+    }
+    else if (len <= 65535) {
+        (*frame)[1] = 0x80 | 126;  // 掩码位 + 长度标识 126
+        *(uint16_t*)(&(*frame)[2]) = htons((uint16_t)len);
+        memcpy(&(*frame)[4], mask, 4);  // 掩码密钥
+        header_len = 8;  // 2 + 2 + 4
+    }
+    else {
+        (*frame)[1] = 0x80 | 127;  // 掩码位 + 长度标识 127
+        uint64_t network_len = htonll(len);  // 转换为网络字节序
+        memcpy(&(*frame)[2], &network_len, 8);
+        memcpy(&(*frame)[10], mask, 4);  // 掩码密钥
+        header_len = 14;  // 2 + 8 + 4
+    }
+
+    // 应用掩码到数据
+    for (uint64_t i = 0; i < len; i++) {
+        (*frame)[header_len + i] = data[i] ^ mask[i % 4];
+    }
+
+    *frame_len = header_len + len;
+}
+
+****/
+
+/*****
+void build_websocket_frame(const char* data, uint64_t len, char** frame, uint64_t* frame_len) {
+    *frame = (char*)malloc(len + 10); // 动态分配内存，确保足够空间
+    if (*frame == NULL) {
+        fprintf(stderr, "Memory allocation failed\n");
+        return;
+    }
+
+    (*frame)[0] = 0x81; // FIN + Text Frame
+
+    if (len <= 125) {
+        (*frame)[1] = (uint8_t)len;
+        *frame_len = 2 + len;
+    }
+    else if (len <= 65535) {
+        (*frame)[1] = 126;
+        *(uint16_t*)(&(*frame)[2]) = htons((uint16_t)len);
+        *frame_len = 4 + len;
+    }
+    else {
+        (*frame)[1] = 127;
+        uint64_t big_len = len;
+        for (int i = 0; i < 8; i++) {
+            (*frame)[2 + i] = (big_len >> (56 - i * 8)) & 0xFF;
+        }
+        *frame_len = 10 + len;
+    }
+    memcpy(*frame + (*frame_len - len), data, len);
+}
+
+*****/
+
+// 自定义64位网络字节序转换（若平台不支持ntohll）
+
+uint64_t ntohll2(uint64_t net) {
+    return ((uint64_t)ntohl(net & 0xFFFFFFFF)) << 32 | ntohl(net >> 32);
+}
+
+
+
+//根据RFC 6455，WebSocket帧
+int parse_websocket_frame(const char* buffer, int len, char** output) {
+    const unsigned char* data = (const unsigned char*)buffer;
+    if (len < 2) return -1; // 帧头不完整
+
+    // 检查操作码是否为文本帧（0x01）
+    unsigned char opcode = data[0] & 0x0F;
+    if (opcode != 0x01) return -2; // 非文本帧
+
+    // 解析掩码位和负载长度
+    bool masked = (data[1] & 0x80) != 0;
+    uint64_t payload_len = data[1] & 0x7F;
+    int mask_offset = 2;
+
+
+    if (payload_len == 126) {
+        uint16_t len;
+        memcpy(&len, data + 2, sizeof(len));
+        payload_len = ntohs(len);
+        mask_offset += 2;
+    }
+    else if (payload_len == 127) {
+        uint64_t len;
+        memcpy(&len, data + 2, sizeof(len));
+        payload_len = ntohll(len); // 确保 ntohll 正确处理 64 位网络字节序
+        mask_offset += 8;
+    }
+
+    /***
+    if (payload_len == 126) {
+        if (len < 4) return -1;
+        payload_len = ntohs(*(uint16_t*)(data + 2));
+        mask_offset += 2;
+    }
+    else if (payload_len == 127) {
+        if (len < 10) return -1;
+        payload_len = ntohll(*(uint64_t*)(data + 2));
+        mask_offset += 8;
+    }
+
+    */
+
+    if (!masked) return -3; // 客户端必须掩码
+
+    // 检查数据完整性
+    if (len < mask_offset + 4 + (int)payload_len) return -1;
+
+    // 提取掩码和负载
+    const unsigned char* mask = data + mask_offset;
+    const unsigned char* payload = data + mask_offset + 4;
+
+    // 分配内存并解码
+    *output = (char*)malloc(payload_len + 1);
+    if (!*output) return -4;
+
+    for (uint64_t i = 0; i < payload_len; i++) {
+        (*output)[i] = payload[i] ^ mask[i % 4];
+    }
+    (*output)[payload_len] = '\0';
+
+
+
+    return (int)payload_len;
+}
 
 
 
@@ -79,24 +288,10 @@ void ClientData::async_func(char* request_json) {
 
     printf("Received command: %s\n", command->valuestring);
 
-    //ツールコマンド
-    if (strcmp(command->valuestring, "decode") == 0) {
-        handle_decode(request);
-        cJSON_Delete(request);
-        return;
-
-    }
-    if (strcmp(command->valuestring, "encode") == 0) {
-        handle_encode(request);
-        cJSON_Delete(request);
-        return;
-
-    }
-
 
     cJSON* modelName = cJSON_GetObjectItem(request, "modelName");
     if (!modelName || !cJSON_IsString(modelName)) {
-        send_error_response(("Missing or invalid 'modelName'"), id->valuestring);
+        send_error_response("Missing or invalid 'modelName'", id->valuestring);
         cJSON_Delete(request);
         return;
     }
@@ -108,9 +303,7 @@ void ClientData::async_func(char* request_json) {
     if (!client_reader){
         if (strcmp(command->valuestring, "connect") == 0) {
             client_reader = new ClientReader();
-            //callbak用------------------------
-            client_reader->setClient(this);
-            //----------------------------------
+            client_reader->setClient((void*)this);
             client_reader->setID(id->valuestring);
 
         }
@@ -129,67 +322,70 @@ void ClientData::async_func(char* request_json) {
             return;
         }
     }
-
     // 处理不同的命令
     if (strcmp(command->valuestring, "connect") == 0) {
         client_reader->handle_connect(request);
-    }else
+    }
 
     if (strcmp(command->valuestring, "disconnect") == 0) {
         client_reader->handle_disconnect(request);
     }
-    else
 
     if (strcmp(command->valuestring, "get_capabilities") == 0) {
         client_reader->handle_get_capabilities(request);
     }
-    else
 
     if (strcmp(command->valuestring, "set_tag_storage") == 0) {
         client_reader->set_tag_storage(request);
     }
-    else
 
     if (strcmp(command->valuestring, "set_antenna") == 0) {
         client_reader->set_antenna(request);
     }
-    else
     if (strcmp(command->valuestring, "get_antenna") == 0) {
         client_reader->get_antenna(request);
     }
-    else
 
     if (strcmp(command->valuestring, "get_antenna_pro") == 0) {
         client_reader->get_antenna_pro(request);
     }
-    else
 
 
     if (strcmp(command->valuestring, "set_trigger_type") == 0) {
-        client_reader->handle_set_trigger_type(request);
+       // client_reader->handle_set_trigger_type(request);
     }
-    else
     
     if (strcmp(command->valuestring, "read") == 0) {
         client_reader->handle_read(request);
     }
-    else
     
     if (strcmp(command->valuestring, "write") == 0) {
         client_reader->handle_write(request);
     }
-    else
     
     if (strcmp(command->valuestring, "start_inventory") == 0) {
         client_reader->handle_start_inventory(request);
     }
-    else
+/***
+    if (strcmp(command->valuestring, "Start_Inventory_Thread") == 0) {
+        handle_start_inventory_thread(data, request);
+    } 
+    
+    if (strcmp(command->valuestring, "Stop_Inventory_Thread") == 0) {
+        handle_stop_inventory_thread(data,request);
+    } 
+  ***/
     if (strcmp(command->valuestring, "stop_inventory") == 0) {
         client_reader->handle_stop_inventory(request);
     }
-    else {
-        send_error_response("Invalid command.", id->valuestring);
+
+    if (strcmp(command->valuestring, "decode") == 0) {
+        handle_decode(request);
     }
+    if (strcmp(command->valuestring, "encode") == 0) {
+        handle_encode(request);
+    }
+
 
     //send_error_response(data, "Unknown command");
     cJSON_Delete(request);  // 释放 JSON 资源
@@ -214,7 +410,7 @@ int hex_to_bytes(const char* hex, uint8_t* bytes, size_t length) {
 
     // 转换
     for (size_t i = 0; i < length; i++) {
-        if (sscanf_s(hex + 2 * i, "%2hhx", &bytes[i]) != 1) {
+        if (sscanf(hex + 2 * i, "%2hhx", &bytes[i]) != 1) {
             return -1;
         }
     }
@@ -241,17 +437,16 @@ void ConvertToHexString(UINT8* pTagID, size_t length, char** hexString) {
     }
 
     for (size_t i = 0; i < length; i++) {
-        sprintf_s(*hexString + i * 2, 3, "%02X", pTagID[i]);
+        sprintf(*hexString + i * 2, "%02X", pTagID[i]);
     }
     (*hexString)[length * 2] = '\0'; // 文字列終端
 }
 
 //做成G_TAG_DATA的JSON
-void tagdata_json(const char* id, G_TAG_DATA * *tags, int tagCount, cJSON* response_json)
+void tagdata_json(G_TAG_DATA** tags, int tagCount,cJSON* response_json)
 {
     // 构造 JSON 响应
     cJSON_AddStringToObject(response_json, "status", "success");
-    cJSON_AddStringToObject(response_json, "id", id);
     cJSON_AddNumberToObject(response_json, "tagCount", tagCount);
 
     cJSON* data_array = cJSON_CreateArray();
@@ -313,33 +508,8 @@ void tagdata_json(const char* id, G_TAG_DATA * *tags, int tagCount, cJSON* respo
 }
 
 
-// UTF-16 (wchar_t*) の文字列を UTF-8 (char*) に変換する関数
-char* utf16_to_utf8(const wchar_t* utf16) {
-    if (!utf16) return NULL;
-
-    // UTF-8 のサイズを取得（NULL 終端を含む）
-    int utf8Size = WideCharToMultiByte(CP_UTF8, 0, utf16, -1, NULL, 0, NULL, NULL);
-    if (utf8Size == 0) {
-        return NULL;
-    }
-
-    // UTF-8 用バッファの確保
-    char* utf8 = (char*)malloc(utf8Size);
-    if (!utf8) {
-        return NULL;
-    }
-
-    // UTF-16 を UTF-8 に変換
-    if (WideCharToMultiByte(CP_UTF8, 0, utf16, -1, utf8, utf8Size, NULL, NULL) == 0) {
-        free(utf8);
-        return NULL;
-    }
-
-    return utf8;
-}
-
-
 // 发送 JSON 响应
+
 void ClientData::send_json_response(cJSON* response_json)  {
     char* json_str = cJSON_PrintUnformatted(response_json);
     if (json_str){
@@ -399,18 +569,6 @@ void TCHARToChar(const TCHAR* tcharStr, char* charStr, size_t size) {
 #endif
 }
 
-std::wstring CharToWString(const char* str) {
-    if (!str) return L"";
-    int len = MultiByteToWideChar(CP_UTF8, 0, str, -1, nullptr, 0);
-    if (len == 0) return L"";
-    std::wstring wstr(len, L'\0');
-    MultiByteToWideChar(CP_UTF8, 0, str, -1, &wstr[0], len);
-    // 終端の null 文字を除去する
-    if (!wstr.empty() && wstr.back() == L'\0') {
-        wstr.pop_back();
-    }
-    return wstr;
-}
 
 // 将 memoryBank 枚举值转为字符串
 const char* get_memory_bank_string(G_MEMORY_BANK memoryBank) {

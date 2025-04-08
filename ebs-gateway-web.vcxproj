@@ -109,16 +109,18 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard_C>Default</LanguageStandard_C>
-      <LanguageStandard>Default</LanguageStandard>
+      <LanguageStandard>stdcpp20</LanguageStandard>
       <DisableSpecificWarnings>4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>advapi32.lib;ws2_32.lib;msvcrtd.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -127,38 +129,47 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>advapi32.lib;ws2_32.lib;msvcrtd.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="asyncfunc.cpp" />
     <ClCompile Include="cJSON.c" />
     <ClCompile Include="config.cpp" />
-    <ClCompile Include="lockclient.cpp" />
+    <ClCompile Include="d_encoding.cpp" />
     <ClCompile Include="logger.cpp" />
     <ClCompile Include="connect.cpp" />
     <ClCompile Include="read.cpp" />
     <ClCompile Include="inventory.cpp" />
-    <ClCompile Include="client_manager.cpp" />
+    <ClCompile Include="hmac.cpp" />
     <ClCompile Include="capabilities.cpp" />
     <ClCompile Include="write.cpp" />
     <ClCompile Include="set_reader.cpp" />
     <ClCompile Include="websocket.cpp" />
     <ClCompile Include="winservice.cpp" />
     <ClCompile Include="antenna.cpp" />
+    <ClCompile Include="websocket_frame.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="async_func.h" />
     <ClInclude Include="cJSON.h" />
+    <ClInclude Include="ClientData.h" />
+    <ClInclude Include="ClientReader.h" />
     <ClInclude Include="config.h" />
+    <ClInclude Include="d_encoding.h" />
     <ClInclude Include="include\DeviceInterface.h" />
+    <ClInclude Include="include\IRFIDReader.h" />
     <ClInclude Include="logger.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

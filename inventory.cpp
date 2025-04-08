@@ -5,66 +5,72 @@
 #include "cJSON.h"
 #include "async_func.h"
 
+
 void printTagData(G_TAG_DATA* pTagData);
+BOOL gs1 = false;
 
-void start_inventory_thread_callbak(G_TAG_DATA** tags,int tagCount);
+void start_inventory_thread_callbak(const char* id, void* lpclient, G_TAG_DATA** tags, int tagCount){
+//void ClientReader::start_inventory_thread_callbak(G_TAG_DATA** tags, int tagCount){
 
-void start_inventory_thread_callbak(G_TAG_DATA** tags, int tagCount){
+    ClientData* client = static_cast<ClientData*>(lpclient);
 
-    //安全取出客户端
-     // ------------------------------------------------
-    ClientData data;
-    get_client_data(&data);
-    // ------------------------------------------------
+    if (client) {
+        // 创建 JSON 对象
+        cJSON* tag_json = cJSON_CreateObject();
+        tagdata_json(id, tags, tagCount, tag_json);
+        // 发送 JSON 数据给客户端
+        client->send_json_response(tag_json);
+    }
 
-    // 创建 JSON 对象
-    cJSON* tag_json = cJSON_CreateObject();
-    tagdata_json(tags, tagCount, tag_json);
-    // 发送 JSON 数据给客户端
-    send_json_response(&data, tag_json);
+    return;
 
-    // メモリ解放
-    FreeTagArray(tags, tagCount);
 }
-// 处理 Start_Inventory_Thread 逻辑
-void handle_start_inventory_thread(ClientData* data, cJSON* request) {
 
-    cJSON* modelName = cJSON_GetObjectItem(request, "modelName");
-    if (!modelName || !cJSON_IsString(modelName)) {
-        send_error_response(data, "Missing or invalid 'modelName'");
+// 处理 Start_Inventory 逻辑
+void ClientReader::handle_start_inventory(cJSON* request) {
+    ClientData* client = (ClientData*)(this->client);
+
+
+    cJSON* id = cJSON_GetObjectItem(request, "id");
+    if (!id || !cJSON_IsString(id)) {
+        client->send_error_response("Missing or invalid 'id'", "");
         return;
     }
 
     cJSON* params = cJSON_GetObjectItem(request, "params");
     if (!params) {
-        send_error_response(data, "Missing 'params' field");
+        client->send_error_response("Missing 'params' field",id->valuestring);
         return;
     }
 
     // 获取memoryBank
     cJSON* memoryBank = cJSON_GetObjectItem(params, "memoryBank");
+    cJSON* m_gs1 = cJSON_GetObjectItem(params, "gs1");
 
-
-    // 获取超时时间
-    cJSON* timeout_ms = cJSON_GetObjectItem(params, "timeout_ms");
-    uint32_t m_timeout_ms = 0;
-    if (timeout_ms) {
-        m_timeout_ms = timeout_ms->valueint;
+    if (!m_gs1) gs1 = false;
+    if (m_gs1->valueint == 1) {
+        gs1 = true;
+    }
+    else {
+        gs1 = false;
     }
 
-    //指定读写器
-    DeviceInterface dev;
-    int discovered = discover(modelName->valuestring, &dev);
-    if (-1 == discovered) {
-        send_error_response(data, "Device not found");
+    //リーダーに接続したかチェック
+    if (!this->reader) return;
+    if (!(this->reader->isOpen)()) {
+        client->send_error_response(utf16_to_utf8(L"リーダーに接続されていません。"),id->valuestring);
         return;
     }
-    //客户端接续lock
-    // ------------------------------------------------
-    init_locks();
-    set_client_data(data);
-    // ------------------------------------------------
 
+    //使用中かどうかチェック
+    if (this->reader->getUse()) {
+        client->send_error_response(utf16_to_utf8(L"リーダーが使用中です。"), id->valuestring);
+        return;
+    }
+    //リーダを利用開始する.
+    this->reader->assign();
+
+ 
     bool success;
     if (memoryBank) {
         G_MEMORY_BANK memory_bank = strcmp(memoryBank->valuestring, "EPC") == 0 ? G_MEMORY_BANK_EPC :
@@ -72,180 +78,141 @@ void handle_start_inventory_thread(ClientData* data, cJSON* request) {
             strcmp(memoryBank->valuestring, "USER") == 0 ? G_MEMORY_BANK_USER :
             G_MEMORY_BANK_RESERVED;
 
-        success = dev.Start_Inventory_Thread(start_inventory_thread_callbak, &memory_bank, m_timeout_ms);
+        success = (this->reader->Start_Inventory)(&memory_bank);
 
     }else{
-        success = dev.Start_Inventory_Thread(start_inventory_thread_callbak,NULL, m_timeout_ms);
+        success = (this->reader->Start_Inventory)(NULL);
 
     }
     if (!success) {
-        send_error_response(data, "Missing or invalid Start_Inventory_Thread");
-        // 构造 JSON 响应
-        cJSON* response_json = cJSON_CreateObject();
-        cJSON_AddStringToObject(response_json, "status", success ? "success" : "failed");
-        cJSON_AddStringToObject(response_json, "message", success ? "Inventory thread started" : "Failed to start inventory");
-        send_json_response(data, response_json);
+        client->send_error_response("Missing or invalid Start_Inventory_Thread",id->valuestring);
     }
+    this->reader->release();
+
 }
 
-// 处理 Stop_Inventory_Thread 逻辑
-void handle_stop_inventory_thread(ClientData* data,cJSON* request) {
+// 处理 Stop_Inventory 逻辑
+void ClientReader::handle_stop_inventory(cJSON* request) {
 
-    cJSON* modelName = cJSON_GetObjectItem(request, "modelName");
-    if (!modelName || !cJSON_IsString(modelName)) {
-        send_error_response(data, "Missing or invalid 'modelName'");
-        return;
-    }
-    //指定读写器
-    DeviceInterface dev;
-    int discovered = discover(modelName->valuestring, &dev);
-    if (-1 == discovered) {
-        send_error_response(data, "Device not found");
-        return;
-    }
-    int result = dev.Stop_Inventory_Thread();
-    if (result != 0) {
-        send_error_response(data, "Stop_Inventory_Thread operation failed");
-        return;
-    }
+    ClientData* client = (ClientData*)(this->client);
 
-    //解锁客户端
-    // ------------------------------------------------
-    destroy_locks();
-    // ------------------------------------------------
+    cJSON* id = cJSON_GetObjectItem(request, "id");
+    if (!id || !cJSON_IsString(id)) {
+        client->send_error_response("Missing or invalid 'id'", "");
+        return;
+    }
     
+    //リーダーに接続したかチェック
+    if (!this->reader) return;
+    if (!(this->reader->isOpen)()) {
+        client->send_error_response(utf16_to_utf8(L"リーダーに接続されていません。"), id->valuestring);
+        return;
+    }
+
+    //使用中かどうかチェック
+    if (this->reader->getUse()) {
+        client->send_error_response(utf16_to_utf8(L"リーダーが使用しています。"), id->valuestring);
+        return;
+    }
+
+    this->reader->assign();
+    int result = (this->reader->Stop_Inventory)();
+    //リーダを利用終了する.
+    this->reader->release();
+
+    if (result != 0) {
+        client->send_error_response("Stop_Inventory_Thread operation failed", id->valuestring);
+        return;
+    }
+
+
     // 构造 JSON 响应
     cJSON* response_json = cJSON_CreateObject();
     cJSON_AddStringToObject(response_json, "status", "success");
+    cJSON_AddStringToObject(response_json, "id", id->valuestring);
     cJSON_AddStringToObject(response_json, "message", "Inventory thread stopped successfully");
-    send_json_response(data, response_json);
+    client->send_json_response(response_json);
 }
 
 
-// 处理 Start_Inventory 逻辑
-void handle_start_inventory(ClientData* data, cJSON* request) {
+void ClientReader::handle_set_trigger_type(cJSON* request) {
+    ClientData* client = (ClientData*)(this->client);
+
+    cJSON* id = cJSON_GetObjectItem(request, "id");
+    if (!id || !cJSON_IsString(id)) {
+        client->send_error_response("Missing or invalid 'id'", "");
+        return;
+    }
+
     cJSON* modelName = cJSON_GetObjectItem(request, "modelName");
     if (!modelName || !cJSON_IsString(modelName)) {
-        send_error_response(data, "Missing or invalid 'modelName'");
+        client->send_error_response("Missing or invalid 'modelName'",id->valuestring);
+        return;
+    }
+
+ 
+    //リーダーに接続したかチェック
+    if (!this->reader) return;
+    if (!(this->reader->isOpen)()) {
+        client->send_error_response(utf16_to_utf8(L"リーダーに接続されていません。"), id->valuestring);
+        return;
+    }
+
+    //使用中かどうかチェック
+    if (this->reader->getUse()) {
+        client->send_error_response(utf16_to_utf8(L"リーダーが使用中です。"), id->valuestring);
         return;
     }
 
     cJSON* params = cJSON_GetObjectItem(request, "params");
     if (!params) {
-        send_error_response(data, "Missing 'params' field");
-        return;
-    }
-
-    // 获取memoryBank
-    cJSON* memoryBank = cJSON_GetObjectItem(params, "memoryBank");
-
-    // 获取超时时间
-    cJSON* timeout_ms = cJSON_GetObjectItem(params, "timeout_ms");
-    uint32_t m_timeout_ms = 0;
-    if (timeout_ms) {
-        m_timeout_ms = timeout_ms->valueint;
-    }
-
-    //指定读写器
-    DeviceInterface dev;
-    int discovered = discover(modelName->valuestring, &dev);
-    if (-1 == discovered) {
-        send_error_response(data, "Device not found");
-        return;
-    }
-
-    G_TAG_DATA** tags = NULL;
-    int tagCount = 0;
-    int result;
-    if (memoryBank) {
-        G_MEMORY_BANK memory_bank = strcmp(memoryBank->valuestring, "EPC") == 0 ? G_MEMORY_BANK_EPC :
-            strcmp(memoryBank->valuestring, "TID") == 0 ? G_MEMORY_BANK_TID :
-            strcmp(memoryBank->valuestring, "USER") == 0 ? G_MEMORY_BANK_USER :
-            G_MEMORY_BANK_RESERVED;
-        result = dev.start_inventory(&tags, &tagCount, &memory_bank, m_timeout_ms);
-    }
-    else {
-        result = dev.start_inventory(&tags, &tagCount, NULL, m_timeout_ms);
-    }
-
-    if (result != 0 || tagCount == 0) {
-        send_error_response(data, "No tags found or read operation failed");
-        return;
-    }
-    // 构造 JSON 响应
-    cJSON* response_json = cJSON_CreateObject();
-    tagdata_json(tags, tagCount, response_json);
-    //对客户端送信
-    send_json_response(data, response_json);
-
-    //内存释放
-    // メモリ解放
-    FreeTagArray(tags, tagCount);
-
-}
-
-void handle_set_trigger_type(ClientData* data, cJSON* request) {
-    cJSON* modelName = cJSON_GetObjectItem(request, "modelName");
-    if (!modelName || !cJSON_IsString(modelName)) {
-        send_error_response(data, "Missing or invalid 'modelName'");
-        return;
-    }
-
-    cJSON* params = cJSON_GetObjectItem(request, "params");
-    if (!params) {
-        send_error_response(data, "Missing 'params' field");
+        client->send_error_response("Missing 'params' field", id->valuestring);
         return;
     }
     //triggerType
     cJSON* triggerType = cJSON_GetObjectItem(params, "triggerType");
     if (!triggerType) {
-        send_error_response(data, "Missing or invalid 'triggerType' parameter");
+        client->send_error_response("Missing or invalid 'triggerType' parameter", id->valuestring);
         return;
     }
 
     // 获取超时时间
     cJSON* timeout_ms = cJSON_GetObjectItem(params, "timeout_ms");
     if (!timeout_ms) {
-        send_error_response(data, "Missing or invalid 'timeout_ms' parameter");
+        client->send_error_response("Missing or invalid 'timeout_ms' parameter",id->valuestring);
         return;
     }
 
     //report_n 读N个后触发读取数据
     cJSON* report_n = cJSON_GetObjectItem(params, "report_n");
     if (!report_n) {
-        send_error_response(data, "Missing or invalid 'report_n' parameter");
+        client->send_error_response("Missing or invalid 'report_n' parameter",id->valuestring);
         return;
     }
     //"nStop" 读N个停止盘点
     cJSON* nStop = cJSON_GetObjectItem(params, "nStop");
     if (!nStop) {
-        send_error_response(data, "Missing or invalid 'nStop' parameter");
+        client->send_error_response("Missing or invalid 'nStop' parameter",id->valuestring);
         return;
     }
-    // 设备读取
-    DeviceInterface dev;
 
-    // 发现设备
-    int discovered = discover(modelName->valuestring, &dev);
-    if (-1 == discovered) {
-        send_error_response(data, "Device not found");
-        return;
-    }
-    
-    dev.set_trigger_type(triggerType->valueint, 
-                               timeout_ms->valueint,
-                                    report_n->valueint, 
-                                        nStop->valueint);
+    this->reader->assign();
+    (this->reader->set_trigger_type)(triggerType->valueint,
+                                            timeout_ms->valueint,
+                                            report_n->valueint,
+                                            nStop->valueint);
+    this->reader->release();
 
     cJSON* response_json = cJSON_CreateObject();
     cJSON_AddStringToObject(response_json, "status", "success");
+    cJSON_AddStringToObject(response_json, "id", id->valuestring);
     cJSON_AddStringToObject(response_json, "message", "Trigger type updated");
-    send_json_response(data, response_json);
+    client->send_json_response(response_json);
     return;
 }
 
 
-
+/****
 //不使用OK
 void handle_stop_inventory(ClientData* data, cJSON* request) {
     cJSON* modelName = cJSON_GetObjectItem(request, "modelName");
@@ -274,8 +241,7 @@ void handle_stop_inventory(ClientData* data, cJSON* request) {
 
 
 }
-
-
+***/
 
 //打印tag TAG_DATA型 -》G_TAG_DATA型
 void printTagData(G_TAG_DATA* pTagData) {

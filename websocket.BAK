@@ -1,10 +1,8 @@
-﻿#define WIN32_LEAN_AND_MEAN
-
-#include <stdio.h>
+﻿#include <stdio.h>
 #include <stdlib.h>
 #include <winsock2.h>
-#include <windows.h>
 #include <string.h>
+#include <windows.h>
 #include "cJSON.h"
 #include "async_func.h"
 
@@ -27,6 +25,8 @@
 
 
 #define DRIVER_CONF  "%s\\driver.json"
+
+extern ClientData clientData;
 
 
 //外部设定文件加载
@@ -99,8 +99,8 @@ char* base64_encode(const unsigned char* input, int length) {
 // Generate WebSocket accept key
 char* generate_websocket_accept_key(const char* client_key) {
     char concatenated[256];
-    strcpy_s(concatenated, sizeof(concatenated), client_key);
-    strcat_s(concatenated, sizeof(concatenated), WEBSOCKET_GUID);
+    strcpy(concatenated, client_key);
+    strcat(concatenated, WEBSOCKET_GUID);
 
     unsigned char hash[SHA_DIGEST_LENGTH];
     SHA1((unsigned char*)concatenated, strlen(concatenated), hash);
@@ -110,35 +110,28 @@ char* generate_websocket_accept_key(const char* client_key) {
 
 // 线程处理 WebSocket 客户端请求
 DWORD WINAPI handle_websocket_client(LPVOID lpParam) {
-    ClientData* client = static_cast<ClientData*>(lpParam);
+    ClientData* data = (ClientData*)lpParam;
     char buffer[BUFFER_SIZE];
 
     
     //最初バッファーにあるデータを処理する。
-    if (client->getWebSocketFlag() != 1) {
-        client->async_func(client->getBuffer());
+    if (data->websocket != 1) {
+        async_func(data, data->inibuffer);
     }
 
-    while (client->isConnected()) {
+    while (data->connected) {
         memset(buffer, 0, BUFFER_SIZE);
-        int bytes_received = recv(client->getSocket(), buffer, BUFFER_SIZE, 0);
+        int bytes_received = recv(data->client_socket, buffer, BUFFER_SIZE, 0);
         if (bytes_received > 0) {
-            if (client->getWebSocketFlag() == 1) {
+            if (data->websocket == 1) {
                 char* payload = NULL;
                 int payload_len = parse_websocket_frame(buffer, bytes_received, &payload);
-                if (payload) {
-                    // 处理payload
-                    client->async_func(payload);
-                    free(payload);
-                }
-                else {
-                    printf("socket closed. bytes_received =[%d]\n", payload_len);
-                    break;
-                }
-
+                // 处理payload
+                async_func(data, payload);
+                free(payload);
             }
             else {
-                client->async_func(buffer);
+                async_func(data, buffer);
             }
         }else{
                 //リーダークを強制ローズする
@@ -149,8 +142,9 @@ DWORD WINAPI handle_websocket_client(LPVOID lpParam) {
     }
 
     // 🔴 クリーンアップ処理
-    closesocket(client->getSocket());  // ソケットを閉じる
-    delete client;
+    closesocket(data->client_socket);  // ソケットを閉じる
+    free(data);  // メモリを解放
+
 
     return 0;
 }
@@ -158,10 +152,8 @@ DWORD WINAPI handle_websocket_client(LPVOID lpParam) {
 
 DWORD WINAPI socketMain(LPVOID lpParam) {
 
-    printf("*--------------------------------------*\n");
-    printf("*             ebs-gateway v3.0         *\n");
-    printf("*--------------------------------------*\n\n");
     get_config();
+    InitializeDevsLock();        // 初始化加锁操作
 
     WSADATA wsa;
     SOCKET server_socket, client_socket;
@@ -189,8 +181,8 @@ DWORD WINAPI socketMain(LPVOID lpParam) {
     int send_buf_size = 65536;
     setsockopt(server_socket, SOL_SOCKET, SO_SNDBUF, (char*)&send_buf_size, sizeof(send_buf_size));
 
-    int optval = 1;
-    setsockopt(server_socket, SOL_SOCKET, SO_KEEPALIVE, (char*)&optval, sizeof(optval));
+   // int optval = 1;
+   // setsockopt(server_socket, SOL_SOCKET, SO_KEEPALIVE, (char*)&optval, sizeof(optval));
 
     if (bind(server_socket, (struct sockaddr*)&server_addr, sizeof(server_addr)) == SOCKET_ERROR) {
         printf("Bind failed\n");
@@ -225,19 +217,24 @@ DWORD WINAPI socketMain(LPVOID lpParam) {
             continue;
         }
 
+        ClientData* client_data = (ClientData*)malloc(sizeof(ClientData));
+        client_data->client_socket = client_socket;
+        client_data->client_addr = client_addr;
+        client_data->connected = 1;
+        client_data->websocket = 1; //WEBSOCKET通信
+        client_data->dev = devs[0]; //デフォルトdev
 
-        ClientData* client_data = new ClientData(client_socket, client_addr,1);
-         
         //区别socket和websocket
         if (strstr(buffer, "Upgrade: websocket") == NULL) {
             printf("TCP Socket client connected\n");
             //tcp接续·
-            client_data->setWebSocketFlag(0);
+            client_data->websocket = 0;
             //开始收信报文保存
-            client_data->setBuffer(buffer);
+            memset(client_data->inibuffer, 0, BUFFER_SIZE);
+            memcpy(client_data->inibuffer,buffer, BUFFER_SIZE);
         }
 
-        if (client_data->getWebSocketFlag() == 1) {
+        if (client_data->websocket == 1) {
             char* key_start = strstr(buffer, "Sec-WebSocket-Key: ");
             if (!key_start) {
                 closesocket(client_socket);
@@ -272,7 +269,7 @@ DWORD WINAPI socketMain(LPVOID lpParam) {
         HANDLE threadHandle = CreateThread(NULL, 0, handle_websocket_client, client_data, 0, NULL);
         if (threadHandle == NULL) {
             closesocket(client_socket);
-            delete client_data;
+            free(client_data);
         }
         else {
             // ハンドルを保存しておく
@@ -288,8 +285,8 @@ DWORD WINAPI socketMain(LPVOID lpParam) {
     closesocket(server_socket);
     WSACleanup();
 
-    //リーダークラス削除
-    ClearReaders();
+    //结束加锁
+    deleteDevsLock();
     // 释放DLL内存
     free_driver_list();
     

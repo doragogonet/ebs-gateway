@@ -112,9 +112,10 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;ZEBRA_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>ZEBRA_ADAPTER_EXPORTS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -129,9 +130,10 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;ZEBRA_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>ZEBRA_ADAPTER_EXPORTS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -145,17 +147,21 @@
   <ItemGroup>
     <ClCompile Include="driver_zebra.cpp" />
     <ClCompile Include="logger.cpp" />
-    <ClCompile Include="ReaderEvent.cpp" />
+    <ClCompile Include="ReaderEventThread.cpp" />
+    <ClCompile Include="ZebraReaderAdapterDLL.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\DeviceInterface.h" />
+    <ClInclude Include="..\..\include\IRFIDReader.h" />
     <ClInclude Include="logger.h" />
     <ClInclude Include="rfidapi.h" />
     <ClInclude Include="zebra.h" />
+    <ClInclude Include="ZebraReaderAdapterDLL.h" />
+    <ClInclude Include="ZebraReaderAdapter.h" />
+    <ClInclude Include="ThreadParams.h" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="rfidapi32pc.lib" />
-    <Library Include="ws2_32.lib" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,0 +1,74 @@
+// RFIDReader.h
+#pragma once
+#include <string>
+#include <mutex>
+
+class RFIDReader {
+public:
+    RFIDReader(const std::string& id): readerID(id), inUse(false)
+    {
+      
+    }
+
+    ~RFIDReader() {
+        // クリーンアップ処理
+    }
+
+    // 利用開始
+    void assign() {
+        std::lock_guard<std::mutex> lock(mtx);
+        inUse = true;
+    }
+
+    // 利用終了
+    void release() {
+        std::lock_guard<std::mutex> lock(mtx);
+        inUse = false;
+    }
+
+
+    std::string getID() const {
+        return readerID;
+    }
+
+    int zebra_open(ConnectionConfig* ctx, TagProcessingCallback callback);
+		int zebra_close(void);
+		bool is_open(void);
+
+		int set_tag_storage(G_TagStorageConfig TagStorage);
+		int get_tag_storage(G_TagStorageConfig* TagStorage);
+		int get_capabilities(G_READER_CAPS* caps);
+		int set_antenna(LPG_AntennaConfig config);
+		int get_antenna(LPG_AntennaConfig config);
+		int get_antenna_pro(G_ANTENNA_PRO* antennaInfo);
+
+		bool Start_Inventory_Thread(G_MEMORY_BANK* memoryBank);
+		int Stop_Inventory_Thread(void);
+		
+		void set_trigger_type(uint16_t triggerType, uint32_t timeout_ms, uint16_t report_n, uint16_t nStop);
+		DWORD WINAPI ReaderEventThread(LPVOID lpParam);
+
+		bool StopReading(void);
+		bool StartReading(MEMORY_BANK* memoryBank);
+
+
+
+private:
+    std::string readerID;
+		RFID_HANDLE32 readerHandle;
+		TRIGGER_INFO triggerInfo;
+		REPORT_TRIGGERS m_ReportTriggers;
+		TAG_EVENT_REPORT_INFO m_TagEventReportInfo;
+		HANDLE stopTestingEventHandle;
+
+		bool isConnected;
+		HANDLE readerEventAwaitingThreadHandle;
+		BOOL g_AccessSequenceRunning;
+		UINT16 m_OperationState;
+
+    bool inUse;
+    mutable std::mutex mtx;
+};
+
+
+

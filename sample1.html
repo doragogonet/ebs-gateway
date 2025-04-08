@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>WebSocketサンプル</title>
+</head>
+<body>
+  <h1>WebSocketサンプル</h1>
+  <input type="text" id="messageInput" placeholder="メッセージを入力">
+  <button id="sendButton">送信</button>
+  <div id="messageContainer">
+    <h2>受信メッセージ:</h2>
+    <p id="receivedMessage"></p>
+  </div>
+
+  <script>
+    // 接続先のWebSocketサーバーURL（実際の環境に合わせて変更してください）
+    const ws = new WebSocket('ws://localhost:9001');
+
+    // WebSocket接続が確立したときのイベント
+    ws.addEventListener('open', (event) => {
+      console.log('WebSocket接続が確立しました');
+    });
+
+    // サーバーからメッセージを受信したときのイベント
+    ws.addEventListener('message', (event) => {
+      console.log('受信メッセージ:', event.data);
+      document.getElementById('receivedMessage').textContent = event.data;
+    });
+
+    // エラー発生時のイベント
+    ws.addEventListener('error', (error) => {
+      console.error('WebSocketエラー:', error);
+    });
+
+    // WebSocket接続が閉じたときのイベント
+    ws.addEventListener('close', (event) => {
+      console.log('WebSocket接続が閉じました');
+    });
+
+    // 送信ボタンのクリックイベントハンドラー
+    document.getElementById('sendButton').addEventListener('click', () => {
+      const input = document.getElementById('messageInput');
+      const message = input.value;
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.send(message);
+        console.log('送信メッセージ:', message);
+        input.value = ''; // 送信後、入力欄をクリア
+      } else {
+        alert('WebSocket接続がまだ開かれていません');
+      }
+    });
+  </script>
+</body>
+</html>

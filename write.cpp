@@ -7,12 +7,15 @@
 #include "cJSON.h"
 #include "async_func.h"
 
-
 // 处理 "write" 请求
-void handle_write(ClientData* data, cJSON* request) {
-    cJSON* modelName = cJSON_GetObjectItem(request, "modelName");
-    if (!modelName || !cJSON_IsString(modelName)) {
-        send_error_response(data, "Missing or invalid 'modelName'");
+void ClientReader::handle_write(cJSON* request) {
+
+    ClientData* client = (ClientData*)(this->client);
+
+
+    cJSON* id = cJSON_GetObjectItem(request, "id");
+    if (!id || !cJSON_IsString(id)) {
+        client->send_error_response("Missing or invalid 'id'", "");
         return;
     }
     /**
@@ -31,7 +34,7 @@ void handle_write(ClientData* data, cJSON* request) {
     **/
     cJSON* params = cJSON_GetObjectItem(request, "params");
     if (!params) {
-        send_error_response(data, "Missing 'params' field");
+        client->send_error_response("Missing 'params' field",id->valuestring);
         return;
     }
 
@@ -72,7 +75,7 @@ void handle_write(ClientData* data, cJSON* request) {
         // 解析 tagID
         writeParams.pTagID = (uint8_t*)malloc(writeParams.tagIDLength);
         if (!writeParams.pTagID) {
-            send_error_response(data, "Memory allocation failed");
+            client->send_error_response("Memory pTagID failed",id->valuestring);
             return;
         }
         hex_to_bytes(tagID->valuestring, writeParams.pTagID, writeParams.tagIDLength);
@@ -82,34 +85,43 @@ void handle_write(ClientData* data, cJSON* request) {
         // 解析 pWriteData
         writeParams.pWriteData = (uint8_t*)malloc(writeParams.writeDataLength);
         if (!writeParams.pWriteData) {
-            send_error_response(data, "Memory allocation failed");
+            client->send_error_response("Memory pWriteData failed", id->valuestring);
             return;
         }
         hex_to_bytes(pWriteData->valuestring, writeParams.pWriteData, writeParams.writeDataLength);
     }
 
-
-    // 设备读取
-    DeviceInterface dev;
-  
-    // 发现设备
-    int discovered = discover(modelName->valuestring, &dev);
-    if (-1 == discovered) {
-        send_error_response(data, "Device not found or LOCK");
+    //リーダーに接続したかチェック
+    if (!this->reader) return;
+    if (!(this->reader->isOpen)()) {
+        client->send_error_response(utf16_to_utf8(L"リーダーに接続されていません。"), id->valuestring);
         return;
     }
 
-    int result = dev.write(&writeParams, m_timeout_ms);
+    //使用中かどうかチェック
+    if (this->reader->getUse()) {
+        client->send_error_response(utf16_to_utf8(L"リーダーが使用中です。"), id->valuestring);
+        return;
+    }
+
+    //リーダを利用開始する.
+    this->reader->assign();
+    int result = (this->reader->write)(&writeParams, m_timeout_ms);
+    //リーダを利用終了する.
+    this->reader->release();
+
     if (result != 0 ) {
-        send_error_response(data, "write operation failed");
+        client->send_error_response("write operation failed",id->valuestring);
         return;
     }
     // 生成 JSON 响应
     cJSON* response_json = cJSON_CreateObject();
     cJSON_AddStringToObject(response_json, "status", "success");
+    cJSON_AddStringToObject(response_json, "id", id->valuestring);
     cJSON_AddStringToObject(response_json, "message", "write successfully");
     //对客户端送信
-    send_json_response(data, response_json);
+    client->send_json_response(response_json);
+
     if (writeParams.pWriteData)
         free(writeParams.pWriteData);
     if (writeParams.pTagID)

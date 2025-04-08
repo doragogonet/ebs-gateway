@@ -5,7 +5,7 @@
 #include <iostream>
 
 // 全局变量
-static ClientData clientData;
+/**
 // 线程安全变量
 static CRITICAL_SECTION clientDataLock;  // 线程锁（轻量级）
 static HANDLE hMutex = NULL;             // 进程级互斥锁
@@ -45,6 +45,7 @@ void get_client_data(ClientData* outData) {
     LeaveCriticalSection(&clientDataLock);  // 解锁
 }
 
+*****/
 
 /*******************************************
 //DeviceInterface 加锁操作

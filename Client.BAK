@@ -1,0 +1,70 @@
+#ifndef CLIENT_H
+#define CLIENT_H
+
+#include <winsock2.h>
+#include <vector>
+#include <cstring>
+#include "RFIDReader.h"  // RFIDReaderクラスのヘッダ
+
+// バッファサイズの定義（既存のBUFFER_SIZEを利用）
+#ifndef BUFFER_SIZE
+#define BUFFER_SIZE 1024
+#endif
+
+class Client {
+public:
+    // コンストラクタ：ソケット、アドレス、websocketフラグを渡す
+    Client(SOCKET sock, const sockaddr_in& addr, int websocketFlag)
+        : client_socket(sock), client_addr(addr), connected(true), websocket(websocketFlag)
+    {
+        memset(inibuffer, 0, BUFFER_SIZE);
+    }
+
+    // デストラクタ：ソケットのクローズとRFIDReaderのクリーンアップ
+    ~Client() {
+        // RFIDReaderインスタンスのクリーンアップ（ここではdeleteしていますが、所有権に応じて変更）
+        for (RFIDReader* reader : readers) {
+            delete reader;
+        }
+        readers.clear();
+
+        // ソケットクローズ
+        closesocket(client_socket);
+    }
+
+    // RFIDReaderを追加する
+    void addRFIDReader(RFIDReader* reader) {
+        readers.push_back(reader);
+    }
+
+    // RFIDReaderを削除する（必要に応じて利用）
+    void removeRFIDReader(RFIDReader* reader) {
+        for (auto it = readers.begin(); it != readers.end(); ++it) {
+            if (*it == reader) {
+                readers.erase(it);
+                break;
+            }
+        }
+    }
+
+    // 各種アクセッサ
+    SOCKET getSocket() const { return client_socket; }
+    sockaddr_in getAddr() const { return client_addr; }
+    bool isConnected() const { return connected; }
+    void setConnected(bool status) { connected = status; }
+    int getWebSocketFlag() const { return websocket; }
+    char* getBuffer() { return inibuffer; }
+    const std::vector<RFIDReader*>& getRFIDReaders() const { return readers; }
+
+private:
+    SOCKET client_socket;
+    sockaddr_in client_addr;
+    bool connected;
+    int websocket;
+    char inibuffer[BUFFER_SIZE];
+
+    // 複数のRFIDReaderインスタンスを保持する
+    std::vector<RFIDReader*> readers;
+};
+
+#endif // CLIENT_H

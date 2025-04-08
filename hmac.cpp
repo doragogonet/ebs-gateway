@@ -1,5 +1,4 @@
-﻿#define _CRT_SECURE_NO_WARNINGS
-#include <stdio.h>
+﻿#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <winsock2.h>
@@ -23,7 +22,7 @@ void generate_hmac(const char* message, char* output) {
 
     // 将结果转换为十六进制字符串
     for (int i = 0; i < len; i++) {
-        sprintf(output + (i * 2), "%02x", result[i]);
+        sprintf_s(output + (i * 2), 3, "%02x", result[i]);
     }
     output[64] = '\0';
 }

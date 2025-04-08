@@ -3,7 +3,7 @@
 "socket-port":9001,
 "HMAC-KEY":"EBS-GATEWAY-2025-02-14",
 "devices":[
-						"C:\\home\\’†ŠÔŒ\\ebs-gateway-web\\zebra\\zebra\\x64\\Debug\\zebra.dll",
+						"C:\\home\\’†ŠÔŒ\\ebs-gateway-web-v2\\zebra\\zebra\\x64\\Debug\\zebra.dll",
 						"C:\\home\\’†ŠÔŒ\\Project2\\zebra\\zebra\\x64\\Debug\\zebra.dll2"
 				]
 }

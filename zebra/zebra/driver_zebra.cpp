@@ -1,37 +1,101 @@
-﻿//#include <iostream>
-#include <windows.h>
-#include "DeviceInterface.h"
+﻿#include <windows.h>
 #include <stdlib.h>
 #include <string.h>
 #include <cstring>
 #include "rfidapi.h"
 #include "logger.h"
 #include "zebra.h"
+#include "ThreadParams.h"
 
- RFID_HANDLE32 readerHandle;
- TRIGGER_INFO triggerInfo;
- REPORT_TRIGGERS m_ReportTriggers;
- TAG_EVENT_REPORT_INFO m_TagEventReportInfo;
 
- static bool isConnected = false;
+ void printRFIDError(RFID_STATUS errorCode) {
+	 switch (errorCode) {
+	 case RFID_API_INVALID_HANDLE:
+		 printf("RFID_API_INVALID_HANDLE: Handle provided is invalid.\n");
+		 break;
+	 case RFID_API_PARAM_ERROR:
+		 printf("RFID_API_PARAM_ERROR: Parameter is invalid.\n");
+		 break;
+	 case RFID_API_COMMAND_TIMEOUT:
+		 printf("RFID_API_COMMAND_TIMEOUT: Timeout and no responses from the reader.\n");
+		 break;
+	 case RFID_COMM_NO_CONNECTION:
+		 printf("RFID_COMM_NO_CONNECTION: No Connection exists to the Host.\n");
+		 break;
+	 case RFID_INVENTORY_IN_PROGRESS:
+		 printf("RFID_INVENTORY_IN_PROGRESS: Inventory in progress, cannot perform requested operation.\n");
+		 break;
+	 case RFID_ACCESS_IN_PROGRESS:
+		 printf("RFID_ACCESS_IN_PROGRESS: Access Operation in progress, cannot perform requested operation.\n");
+		 break;
+	 case RFID_ACCESS_TAG_READ_FAILED:
+		 printf("RFID_ACCESS_TAG_READ_FAILED: Tag Read failed.\n");
+		 break;
+	 case RFID_ACCESS_TAG_NOT_FOUND:
+		 printf("RFID_ACCESS_TAG_NOT_FOUND: Tag(s) not found in the field which match the set Filter(s).\n");
+		 break;
+	 case RFID_COMM_OPEN_ERROR:
+			 printf("RFID_COMM_OPEN_ERROR :Unable to open connection with reader.");
+			 break;
+	 case RFID_COMM_CONNECTION_ALREADY_EXISTS:
+		 printf("RFID_COMM_CONNECTION_ALREADY_EXISTS :Another Connection exists.");
+		 break;
+	 case RFID_COMM_RESOLVE_ERROR:
+		 printf("RFID_COMM_RESOLVE_ERROR :nable to resolve IP or Host Name.");
+		 break;
+	 default:
+		 printf("Unknown error code.\n");
+		 break;
+	 }
 
- static int zebra_open(ConnectionConfig* ctx) {
+	
+ }
+
+  int zebraReader::dll_open(ConnectionConfig* ctx, TagProcessingCallback callback) {
 
     CONNECTION_INFO connectionInfo;
     connectionInfo.version = RFID_API3_5_1;
-	if(isConnected)  //已经接续上 
-		return 1;
-    rw_log(LOG_LEVEL_INFO, "ZEBRA RFID: Opening device");
-    if (isConnected == false && 
-        RFID_API_SUCCESS == RFID_Connect(
-                &readerHandle, 
-			    const_cast<WCHAR*>(ctx->ip),
-                ctx->port, 
-                0, 
-                &connectionInfo))
-    {
+	RFID_STATUS status;
 
-        isConnected = true;
+	status = RFID_Connect(
+		&readerHandle,
+		const_cast<TCHAR*>(ctx->ip),
+		ctx->port,
+		0,
+		&connectionInfo);
+
+	rw_log(LOG_LEVEL_INFO, "ZEBRA RFID: Opening device　v3.0");
+	if (isConnected == false && RFID_API_SUCCESS == status)
+	{
+		isConnected = true;
+
+		//インベントリースレッドを起動する。
+		stopTestingEventHandle = CreateEvent(NULL, TRUE, FALSE, NULL);
+		if (!stopTestingEventHandle) {
+			printf("Failed to create stop event.\n");
+			return -1;
+		}
+
+		ThreadParams* params = new ThreadParams();
+		params->callback = callback;
+		params->pReader = this;
+		params->timeout_ms = ctx->timeout_ms;
+
+		memset(params->id, 0, sizeof(params->id));
+		strcpy_s( params->id, MAX_PATH, ctx->id);
+
+
+		DWORD threadId;
+		readerEventAwaitingThreadHandle = CreateThread(
+			NULL, 0, ReaderEventThread, params, 0, &threadId);
+
+		if (!readerEventAwaitingThreadHandle) {
+			printf("Failed to create reader event thread.\n");
+			delete params;
+			CloseHandle(stopTestingEventHandle);
+			stopTestingEventHandle = NULL;
+			return -1;
+		}
 
 		//グロバール変数初期化
 		TAG_STORAGE_SETTINGS TagStorageSettings;
@@ -43,43 +107,52 @@
 		TagStorageSettings.tagFields = ALL_TAG_FIELDS;
 		RFID_SetTagStorageSettings(readerHandle, &TagStorageSettings);
 
-		//トリガー初期化
-		memset(&triggerInfo,0,sizeof(TRIGGER_INFO));
-		triggerInfo.startTrigger.type = START_TRIGGER_TYPE_IMMEDIATE;
-		triggerInfo.stopTrigger.type = STOP_TRIGGER_TYPE_IMMEDIATE;
-		triggerInfo.tagReportTrigger = 1;
-		m_ReportTriggers.periodicReportDuration = 0;
-		triggerInfo.lpReportTriggers = &m_ReportTriggers;
 
-		memset(&m_TagEventReportInfo, 0, sizeof(TAG_EVENT_REPORT_INFO));
-		m_TagEventReportInfo.newTagEventModeratedTimeoutMilliseconds = 500;
-		m_TagEventReportInfo.tagBackToVisibilityModeratedTimeoutMilliseconds = 500;
-		m_TagEventReportInfo.tagInvisibleEventModeratedTimeoutMilliseconds = 500;
-		m_TagEventReportInfo.reportNewTagEvent = MODERATED;
-		m_TagEventReportInfo.reportTagBackToVisibilityEvent = MODERATED;
-		m_TagEventReportInfo.reportTagInvisibleEvent = MODERATED;
-		triggerInfo.lpTagEventReportInfo = &m_TagEventReportInfo;
 
 		//******/
 		// 接续成功
         return 0;
     }
-	//接续错误
-    return -1;
+
+	printRFIDError(status);
+
+	return -1;
 }
 
-static int zebra__close(void) {
+ //接続か判断
+ bool zebraReader::dll_isOpen(void) {
+	 return isConnected;
+ }
+
+int zebraReader::dll_close(void) {
     rw_log(LOG_LEVEL_INFO, "ZEBRA RFID: Closing device");
     
     RFID_STATUS status;
 
-	Stop_Inventory_Thread();
+	if (!isConnected) return 0;
+
+	//if (RUNNING == m_OperationState)
+	//	StopReading();
 
 	status = RFID_Disconnect(readerHandle);
+	if (RFID_API_SUCCESS == status)
+	{
+		isConnected = false;
+		if (readerEventAwaitingThreadHandle != NULL) {
+			if (stopTestingEventHandle != NULL) {
+				SetEvent(stopTestingEventHandle);
+				WaitForSingleObject(readerEventAwaitingThreadHandle, INFINITE);
+			}
+			CloseHandle(readerEventAwaitingThreadHandle);
+			readerEventAwaitingThreadHandle = NULL;
+		}
 
-	isConnected = false;
+		return 0;
+	}
 
-    return static_cast<int>(status);
+	printRFIDError(status);
+
+    return -1;
 
 }
 
@@ -88,7 +161,7 @@ static int zebra__close(void) {
    [out] G_TAG_DATA数组指针
    [out] G_TAG_DATA数组尺寸指针
 ****************************************/
-static int zebra_read(LPG_READ_ACCESS_PARAMS param,G_TAG_DATA*** tags,int *tagCount, uint32_t timeout_ms) {
+int zebraReader::dll_read(G_READ_ACCESS_PARAMS* param,G_TAG_DATA*** tags,int *tagCount, uint32_t timeout_ms) {
     rw_log(LOG_LEVEL_INFO, "ZEBRA RFID: zebra_read");
 
     *tags = NULL; // 初始化
@@ -97,9 +170,15 @@ static int zebra_read(LPG_READ_ACCESS_PARAMS param,G_TAG_DATA*** tags,int *tagCo
 	LPTAG_DATA  pTagData = RFID_AllocateTag(readerHandle);
 	if(NULL == pTagData)
 	{
-		printf("\n Tag Allocation failed");
+		printf("\n RFID_AllocateTag failed\n");
 		return -1;
 	}
+
+	if (RFID_API_SUCCESS != RFID_PurgeTags(readerHandle, NULL))
+	{
+		printf("RFID_PurgeTags API failed...\n");
+	}
+
 
 	READ_ACCESS_PARAMS ReadAccessParams;
 	memset(&ReadAccessParams, 0, sizeof(READ_ACCESS_PARAMS));
@@ -126,55 +205,13 @@ static int zebra_read(LPG_READ_ACCESS_PARAMS param,G_TAG_DATA*** tags,int *tagCo
 		{
 			ERROR_INFO errorInfo;
 			RFID_GetLastErrorInfo(readerHandle, &errorInfo);
-			printf("\n Read Failed: %S", errorInfo.vendorMessage);
+			printf("\n Read Failed: %S\n", errorInfo.vendorMessage);
 		}
 		else {
 
 			//TAG_DATA 数据转换为 G_TAG_DATA 并存入动态数组
-			 TransferTagDataToGArray(pTagData, tags, tagCount);
+			TransferTagDataToGArray(pTagData, tags, tagCount);
 		}
-
-	}
-	else {
-
-		HANDLE accessComplete = CreateEvent(NULL, FALSE, FALSE, NULL);
-		RFID_RegisterEventNotification(readerHandle, ACCESS_STOP_EVENT, accessComplete);
-
-		//读取TAG开始
-		rfidStatus = RFID_Read(readerHandle,
-			param->pTagID,
-			param->tagIDLength,
-			&ReadAccessParams,
-			NULL,
-			NULL,
-			NULL,
-			NULL);
-
-		if (RFID_API_SUCCESS != rfidStatus)
-		{
-			ERROR_INFO errorInfo;
-			RFID_GetLastErrorInfo(readerHandle, &errorInfo);
-			printf("\n Read Failed: %S", errorInfo.vendorMessage);
-		}
-
-		if (timeout_ms <= 0)timeout_ms = INFINITE;
-
-		// 无限时间等待accessComplete里面有ACCESS_STOP_EVENT
-		WaitForSingleObject(accessComplete, timeout_ms);
-		//	int accessSuccessCount, accessFailureCount
-		//	accessSuccessCount = accessFailureCount = 0;
-		//	rfidStatus =  RFID_GetLastAccessResult(readerHandle, &accessSuccessCount, &accessFailureCount);
-		//	printf("\n\n Reading User memory: Success = %d, Failed = %d", accessSuccessCount, accessFailureCount);
-		while (RFID_API_SUCCESS == RFID_GetReadTag(readerHandle, pTagData)) {
-
-			//TAG_DATA 数据转换为 G_TAG_DATA 并存入动态数组
-			int  _status = TransferTagDataToGArray(pTagData, tags, tagCount);
-			if (0 != _status)
-			{
-				break;
-			}
-		}
-		CloseHandle(accessComplete);
 	}
 	RFID_DeallocateTag(readerHandle, pTagData);
 	return static_cast<int>(rfidStatus);
@@ -185,7 +222,7 @@ static int zebra_read(LPG_READ_ACCESS_PARAMS param,G_TAG_DATA*** tags,int *tagCo
 /**************************************
    [in] LPG_WRITE_ACCESS_PARAMS
 ****************************************/
-static int zebra_write(LPG_WRITE_ACCESS_PARAMS param, uint32_t timeout_ms)
+int zebraReader::dll_write(G_WRITE_ACCESS_PARAMS* param, uint32_t timeout_ms)
 {
 	    rw_log(LOG_LEVEL_INFO, "ZEBRA RFID: zebra_wite");
 
@@ -232,60 +269,7 @@ static int zebra_write(LPG_WRITE_ACCESS_PARAMS param, uint32_t timeout_ms)
 }
 
 
-// Code snippet for Simple Inventory without filters
-static int start_inventory(G_TAG_DATA*** tags, int* tagCount, G_MEMORY_BANK* memoryBank, uint32_t timeout_ms)
-{
-	*tags = NULL; // 初始化
-	*tagCount = 0;
-	RFID_STATUS rfidStatus = RFID_API_SUCCESS;
-
-	TAG_DATA* pTagData = RFID_AllocateTag(readerHandle);
-	if (NULL == pTagData) {
-		return -1;
-	}
-	// RFIDイベントの待機処理
-	HANDLE events[1];
-	events[0] = CreateEvent(NULL, TRUE, FALSE, NULL);
-
-	rfidStatus = RFID_RegisterEventNotification(readerHandle, TAG_READ_EVENT, events[0]);
-
-	// on All Antennas, and which runs till RFID_StopInventory is called
-	//rfidStatus = RFID_PerformInventory(readerHandle, NULL, NULL, &triggerInfo, NULL);
-	if (0 != StartInventoryPerform((MEMORY_BANK*)(memoryBank))) {
-		CloseHandle(events[0]);
-		RFID_DeallocateTag(readerHandle, pTagData);
-		return -1;
-	}
-
-	if (timeout_ms <= 0)timeout_ms = INFINITE;
-
-	if (WaitForSingleObject(events[0], timeout_ms) == WAIT_OBJECT_0)
-
-	{
-		// You can read Tag using RFID_GetEventData
-		//rfidStatus = RFID_GetEventData(readerHandle, TAG_READ_EVENT, pTagData);
-		// if(RFID_API_SUCCESS == rfidStatus)
-		//	printTagData(pTagData);
-	}
-
-	while (RFID_API_SUCCESS == RFID_GetReadTag(readerHandle, pTagData)) {
-		//TAG_DATA 数据转换为 G_TAG_DATA 并存入动态数组
-		int _status = TransferTagDataToGArray(pTagData, tags, tagCount);
-		if (0 != _status || *tagCount > 1000)
-		{
-			break;
-		}
-	}
-	//rfidStatus = RFID_StopInventory(readerHandle);
-	StopInventoryPerformSequence();
-	CloseHandle(events[0]);
-	RFID_DeallocateTag(readerHandle, pTagData);
-
-	return static_cast<int>(rfidStatus);
-
-}
-
-static int set_tag_storage(G_TagStorageConfig TagStorage)
+int zebraReader::dll_set_tag_storage(G_TagStorageConfig TagStorage)
 {
 	TAG_STORAGE_SETTINGS TagStorageSettings;
 	memset(&TagStorageSettings, 0, sizeof(G_TagStorageConfig));
@@ -299,7 +283,7 @@ static int set_tag_storage(G_TagStorageConfig TagStorage)
 
 }
 
-static int get_tag_storage(G_TagStorageConfig* TagStorage)
+int zebraReader::dll_get_tag_storage(G_TagStorageConfig* TagStorage)
 {
 	TAG_STORAGE_SETTINGS TagStorageSettings;
 	memset(&TagStorageSettings, 0, sizeof(G_TagStorageConfig));
@@ -315,7 +299,7 @@ static int get_tag_storage(G_TagStorageConfig* TagStorage)
 
 
 //读写器能力查询
-static int get_capabilities(G_READER_CAPS* caps)
+int zebraReader::dll_get_capabilities(G_READER_CAPS* caps)
 {
 	RFID_STATUS rfidStatus = RFID_API_SUCCESS;
 	READER_CAPS readerCaps;
@@ -342,11 +326,11 @@ static int get_capabilities(G_READER_CAPS* caps)
 }
 
 // 天线配置
-static int set_antenna(LPG_AntennaConfig config)
+int zebraReader::dll_set_antenna(G_AntennaConfig *config)
 {
 	RFID_STATUS rfidStatus = RFID_API_SUCCESS;
 	READER_CAPS readerCaps;
-	UINT16 transmitPowerIndex, receiveSensitivityIndex, transmitFrequencyIndex;
+	UINT16 transmitPowerIndex;
 	ANTENNA_RF_CONFIG AntennaRFConfig;
 
 
@@ -372,11 +356,10 @@ static int set_antenna(LPG_AntennaConfig config)
 
 }
 
-static int get_antenna(LPG_AntennaConfig config)
+int zebraReader::dll_get_antenna(G_AntennaConfig *config)
 {
 	RFID_STATUS rfidStatus = RFID_API_SUCCESS;
 	READER_CAPS readerCaps;
-	UINT16 transmitPowerIndex, receiveSensitivityIndex, transmitFrequencyIndex;
 	ANTENNA_RF_CONFIG AntennaRFConfig;
 
 
@@ -402,7 +385,7 @@ static int get_antenna(LPG_AntennaConfig config)
 
 
 // アンテナ情報を取得する関数
-int get_antenna_pro(G_ANTENNA_PRO* antennaInfo) {
+int zebraReader::dll_get_antenna_pro(G_ANTENNA_PRO* antennaInfo) {
 	if (!antennaInfo) {
 		printf("Invalid antennaInfo pointer!\n");
 		return 0;
@@ -410,7 +393,7 @@ int get_antenna_pro(G_ANTENNA_PRO* antennaInfo) {
 	BOOLEAN antennaConnected = FALSE;
 	UINT32 antennaGain = 0;
 	G_READER_CAPS caps;
-	get_capabilities(&caps);
+	dll_get_capabilities(&caps);
 	// アンテナ数
 	antennaInfo->numAntennas = caps.numAntennas;
 
@@ -428,7 +411,7 @@ int get_antenna_pro(G_ANTENNA_PRO* antennaInfo) {
 
 			G_AntennaConfig config;
 			config.antennaID = i+1;
-			get_antenna(&config);
+			dll_get_antenna(&config);
 			antennaInfo->conf[i] = config;
 		}
 	}
@@ -436,10 +419,39 @@ int get_antenna_pro(G_ANTENNA_PRO* antennaInfo) {
 }
 
 
-static int get_systeminfo(LPG_READER_SYSTEM_INFO sys){
-	//未实装
-	return 0;
+void zebraReader::dll_set_trigger_type(uint16_t triggerType, uint32_t timeout_ms, uint16_t report_n, uint16_t nStop)
+{
+
+	if (triggerType == G_TRIGGER_TYPE_1)
+	{
+		//STOP_TRIGGER_TYPE_N_ATTEMPTS_WITH_TIMEOUT
+		triggerInfo.tagReportTrigger = 0; //  在完成3轮库存盘点后回报所有读取的标签
+		triggerInfo.startTrigger.type = START_TRIGGER_TYPE_IMMEDIATE; // 立即启动类型（无需时间触发）
+		triggerInfo.stopTrigger.type = STOP_TRIGGER_TYPE_N_ATTEMPTS_WITH_TIMEOUT; // 带超时的N次尝试停止类型
+
+		triggerInfo.stopTrigger.value.numAttempts.n = 3; // 执行3轮库存盘点
+		triggerInfo.stopTrigger.value.numAttempts.timeoutMilliseconds = timeout_ms; // 超时时间timeout_ms ms
+	}
+	if (triggerType == G_TRIGGER_TYPE_2)
+	{
+
+		//STOP_TRIGGER_TYPE_TAG_OBSERVATION_WITH_TIMEOUT
+		triggerInfo.tagReportTrigger = report_n; // 在获取report_n个唯一标签或3秒后，报告所有读取到的标签。
+		triggerInfo.startTrigger.type = START_TRIGGER_TYPE_IMMEDIATE; // 立即启动类型（无需时间触发）
+		triggerInfo.stopTrigger.type = STOP_TRIGGER_TYPE_TAG_OBSERVATION_WITH_TIMEOUT; // 通过标签观察或超时停止
+		triggerInfo.stopTrigger.value.tagObservation.n = nStop; // 读取n个标签后停止库存
+		triggerInfo.stopTrigger.value.tagObservation.timeoutMilliseconds = timeout_ms; // timeout_ms后停止
+
+	}
 }
+
+
+
+void zebraReader::dll_get_systeminfo(G_READER_SYSTEM_INFO* systeminfo) {
+
+	return;
+}
+
 
 
 
@@ -452,47 +464,6 @@ const char* get_memory_bank_string(G_MEMORY_BANK memoryBank) {
 		case G_MEMORY_BANK_USER:     return "USER";
 		default:                     return "UNKNOWN";
 	}
-}
-
-
-//打印tag TAG_DATA型 -》G_TAG_DATA型
-void printTagData(TAG_DATA* pTagData) {
-	char jsonBuffer[512];
-
-	// 将 G_TAG_DATA 结构体转换为 JSON 格式
-	snprintf(jsonBuffer, sizeof(jsonBuffer),
-		"{"
-		"\"data\": [{"
-		"\"pTagID\": \"%02X\","
-		"\"tagIDLength\": %d,"
-		"\"PC\": \"%04X\","
-		"\"XPC\": \"%08X\","
-		"\"CRC\": \"%04X\","
-		"\"antennaID\": %d,"
-		"\"peakRSSI\": %d,"
-		"\"tagSeenCount\": %d,"
-		"\"memoryBank\": \"%s\","
-		"\"pMemoryBankData\": \"%02X\","
-		"\"memoryBankDataByteOffset\": %d,"
-		"\"memoryBankDataLength\": %d,"
-		"\"phaseInfo\": %d"
-		"}],"
-		"}",
-		pTagData->pTagID,
-		pTagData->tagIDLength,
-		pTagData->PC,
-		pTagData->XPC,
-		pTagData->CRC,
-		pTagData->antennaID,
-		pTagData->peakRSSI,
-		pTagData->tagSeenCount,
-		get_memory_bank_string(G_MEMORY_BANK(pTagData->memoryBank)),
-		pTagData->pMemoryBankData,
-		pTagData->memoryBankDataByteOffset,
-		pTagData->memoryBankDataLength,
-		pTagData->phaseInfo
-	);
-	printf("%s\n", jsonBuffer);
 }
 
 
@@ -574,61 +545,15 @@ int TransferTagDataToGArray(const TAG_DATA* pSourceTag, G_TAG_DATA*** ppDestTags
 }
 
 
-
+/***
 static int stop_inventory(void) 
 {	RFID_STATUS status;
 	status = RFID_StopInventory(readerHandle);
 	return static_cast<int>(status);
 }
+*****/
 
-static int zebra_close(void) 
-{	RFID_STATUS status;
-	status = RFID_Disconnect(readerHandle);
-	readerHandle = NULL;
-	return static_cast<int>(status);
-}
 
-extern "C" {
-	__declspec(dllexport) DeviceInterface* get_device_interface(void) {
-		static  DeviceInterface dev;
 
-		memset(&dev, 0, sizeof(DeviceInterface));
 
-		dev.open = zebra_open;
-		dev.close = zebra_close;
-
-		// 数据读写
-		dev.read = zebra_read;
-		dev.write = zebra_write;
-		// 天线配置
-	    dev.set_antenna =  set_antenna;
-		dev.get_antenna = get_antenna;
-		dev.get_antenna_pro = get_antenna_pro;
-
-		// 标签存储
-		dev.set_tag_storage = set_tag_storage;
-		dev.get_tag_storage = get_tag_storage;
-
-		//能力查询
-	    dev.get_capabilities = get_capabilities;
-
-		//触发器type
-		dev.set_trigger_type = set_trigger_type;
-		/* ----------------------------
-		 * Inventory操作
-		 * ---------------------------- */
-		dev.start_inventory = start_inventory;
-		dev.stop_inventory = stop_inventory;
-		dev.Start_Inventory_Thread = Start_Inventory_Thread;
-		dev.Stop_Inventory_Thread = Stop_Inventory_Thread;
-		/* ----------------------------
-		 * 设备配置
-		 * ----------------------------   */
-		dev.manufacturer = "Zebra Technologies";
-		dev.model_name = "FX9600";
-		dev.protocol_version = "1.0"; //版本
-		
-		return &dev;
-	}
-}
 

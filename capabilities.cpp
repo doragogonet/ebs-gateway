@@ -3,20 +3,24 @@
 #include "async_func.h"
 
 // 处理 "get_capabilities" 请求
-void handle_get_capabilities(ClientData* data, cJSON* request) {
+void ClientReader::handle_get_capabilities(cJSON* request) {
+    ClientData* client = (ClientData*)(this->client);
 
-    cJSON* modelName = cJSON_GetObjectItem(request, "modelName");
-    if (!modelName || !cJSON_IsString(modelName)) {
-        send_error_response(data, "Missing or invalid 'modelName'");
+    cJSON* id = cJSON_GetObjectItem(request, "id");
+    if (!id || !cJSON_IsString(id)) {
+        client->send_error_response("Missing or invalid 'id'", "");
+        return;
+    }
+    //リーダーに接続したかチェック
+    if (!this->reader) return;
+    if (!(this->reader->isOpen)()) {
+        client->send_error_response("リーダーに接続されていません。", id->valuestring);
         return;
     }
 
-    // 设备读取
-    DeviceInterface dev;
-    // 发现设备
-    int discovered = discover(modelName->valuestring, &dev);
-    if (-1 == discovered) {
-        send_error_response(data, "Device not found or LOCK");
+    //使用中かどうかチェック
+    if (this->reader->getUse()) {
+        client->send_error_response("リーダーが使用中です。", id->valuestring);
         return;
     }
 
@@ -36,14 +40,21 @@ void handle_get_capabilities(ClientData* data, cJSON* request) {
 
     G_READER_CAPS caps;
     memset(&caps, 0, sizeof(G_READER_CAPS));
-    int result = dev.get_capabilities(&caps);
+
+    //リーダを利用開始する.
+    this->reader->assign();
+    int result = (this->reader->get_capabilities)(&caps);
+    //リーダを利用終了する.
+    this->reader->release();
+
     if (result != 0 ) {
-        send_error_response(data, "No tags found or read operation failed");
+        client->send_error_response("No tags found or read operation failed",id->valuestring);
         return;
     }
     cJSON* root = cJSON_CreateObject();
     cJSON_AddStringToObject(root, "status", "success");
-    
+    cJSON_AddStringToObject(root, "id", id->valuestring);
+
     char readerID[MAX_PATH];
     char firmwareVersion[MAX_PATH];
     char cmodelName[MAX_PATH];
@@ -63,7 +74,7 @@ void handle_get_capabilities(ClientData* data, cJSON* request) {
     cJSON_AddNumberToObject(response_json, "countryCode", caps.countryCode); // 示例值
 
     cJSON_AddItemToObject(root, "data", response_json);
-    send_json_response(data, root);
+    client->send_json_response(root);
 
 }
 

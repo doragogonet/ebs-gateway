@@ -3,14 +3,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <iostream>
 #include "cJSON.h"
 
 DeviceInterface devs[MAX_DEVICES];
 char g_hmackey[BUFFER_SIZE];
 int dev_count = 0;
-int socket_port = 8080;
+int socket_port = 9001;
 
+
+// DLL側のエクスポート関数の型定義
 typedef DeviceInterface* (*GetDeviceInterfaceFunc)();
+
 
 // 提取 protocol_version 的数值部分
 char* extract_numeric_version(const char* version) {
@@ -92,10 +96,10 @@ int parse_json_and_fill_device(const char* filename, char*** driver, int* device
         cJSON* device_json = cJSON_GetArrayItem(devices_array, i);
         if (!cJSON_IsString(device_json)) {
             printf("Error: devices[%d] is not a valid string.\n", i);
-            (*driver)[i] = strdup("Unknown");  // 处理异常情况
+            (*driver)[i] = _strdup("Unknown");  // 处理异常情况
         }
         else {
-            (*driver)[i] = strdup(device_json->valuestring);  // **复制字符串**
+            (*driver)[i] = _strdup(device_json->valuestring);  // **复制字符串**
         }
     }
 
@@ -110,12 +114,9 @@ void free_driver_list(void) {
 }
 
 // 用户指定设备
-int discover(const char* model_name, DeviceInterface *dev) {
+int  discover(const char* model_name, DeviceInterface* dev) {
     for (int i = 0; i < dev_count; i++) {
-        if (devs[i].status == 1) {  //设备LOCK中
-            return -1;
-        }
-        if (strcmp(devs[i].model_name, model_name) == 0) {
+        if (strcmp( devs[i].model_name, model_name) == 0) {
             *dev = devs[i];
             return 0;
         }
@@ -127,13 +128,14 @@ int discover(const char* model_name, DeviceInterface *dev) {
 
 
 // 注册设备驱动
-void rw_register_driver(DeviceInterface *new_dev) {
+void rw_register_driver(DeviceInterface* new_dev) {
     if (dev_count < MAX_DEVICES) {
         devs[dev_count++] = *new_dev;
 
     }
   
 }
+
 
 // 动态加载驱动
 int rw_load_driver(const char* driver_path) {
@@ -146,6 +148,17 @@ int rw_load_driver(const char* driver_path) {
     rw_log(LOG_LEVEL_INFO, "load driver OK!");
 
     // 2️⃣ 获取函数地址
+    // エクスポート関数の取得
+    PFN_CreateRFIDReader pfnCreateRFIDReader =
+                                (PFN_CreateRFIDReader)GetProcAddress(handle, "CreateRFIDReader");
+    PFN_DestroyRFIDReader pfnDestroyRFIDReader =
+                                (PFN_DestroyRFIDReader)GetProcAddress(handle, "DestroyRFIDReader");
+
+    if (pfnCreateRFIDReader == nullptr || pfnDestroyRFIDReader == nullptr) {
+        std::cerr << "DLL内の関数取得に失敗しました" << std::endl;
+        FreeLibrary(handle);
+        return -1;
+    }
     GetDeviceInterfaceFunc get_device_interface = (GetDeviceInterfaceFunc)GetProcAddress(handle, "get_device_interface");
     if (!get_device_interface) {
         printf("Failed to get function\n");
@@ -160,8 +173,9 @@ int rw_load_driver(const char* driver_path) {
         FreeLibrary(handle);
         return -1;
     }
-    dev->hModule  = handle;
-    dev->status = 1;
+    dev->hModule = handle;
+    dev->pfnCreateRFIDReader = pfnCreateRFIDReader;
+    dev->pfnDestroyRFIDReader = pfnDestroyRFIDReader;
     // 注册设备驱动
     rw_register_driver(dev);
     
@@ -173,12 +187,10 @@ int rw_load_driver(const char* driver_path) {
 // 动态卸载驱动
 int rw_unload_driver(const char* driver_name) {
     for (int i = 0; i < dev_count; i++) {
-        if (devs[i].status ==1 && strcmp(devs[i].model_name, driver_name) == 0) {
+        if (devs[i].model_name == driver_name) {
 			if(devs[i].hModule){
 				FreeLibrary(devs[i].hModule);
 			}
-            ////设备驱动关闭时释放资源
-            devs[i].status = 0;
             rw_log(LOG_LEVEL_INFO, "Driver unloaded: %s", driver_name);
             return 0;
         }
@@ -214,38 +226,7 @@ int device_open(const char* driver_conf) {
 }
 
 
-//设备驱动建锁　未使用
-int device_Lock(DeviceInterface* driver) {
 
-    // 初始化临界区（轻量级用户模式锁）
-    // 保证同一时间只有一个线程访问DeviceInterface
-    InitializeCriticalSection(&driver->lock);
-
-    // 创建互斥体（内核对象，跨进程可用）
-    // 确保不同进程之间也不能同时访问DeviceInterface
-    driver->hMutex = CreateMutex(NULL, FALSE, NULL);
-    if (driver->hMutex == NULL) {
-        return GetLastError();
-    }
-    printf("Device initialized successfully.\n");
-    return 0;
-}
-
-//设备关闭 未使用
-int device_close(DeviceInterface* dev) {
-    // 销毁临界区
-    DeleteCriticalSection(&dev->lock);
-    
-    // 关闭互斥体句柄
-    if (dev->hMutex) {
-        CloseHandle(dev->hMutex);
-    }
-    dev->status = 0;  // **标记设备已关闭**
-    printf("Device resources released.\n");
-    
-    
-    return 0;
-}
 
 
 // MultiByte (UTF-8) → WideChar (Unicode) 转换 (适用于 Unicode 编译)

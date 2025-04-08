@@ -9,24 +9,20 @@
 
 
 
-void set_tag_storage(ClientData* data, cJSON* request) {
-    /**
-    // 标签存储配置
-    typedef struct {
-        int maxTagCount;
-        int maxMemoryBankByteCount;
-        int maxTagIDByteCount;
-    } G_TagStorageConfig;
-    **/
+void ClientReader::set_tag_storage(cJSON* request) {
 
-    cJSON* modelName = cJSON_GetObjectItem(request, "modelName");
-    if (!modelName || !cJSON_IsString(modelName)) {
-        send_error_response(data, "Missing or invalid 'modelName'");
+    ClientData* client = (ClientData*)(this->client);
+
+
+    cJSON* id = cJSON_GetObjectItem(request, "id");
+    if (!id || !cJSON_IsString(id)) {
+        client->send_error_response("Missing or invalid 'id'", "");
         return;
     }
+
     cJSON* params = cJSON_GetObjectItem(request, "params");
     if (!params) {
-        send_error_response(data, "Missing 'params' field");
+        client->send_error_response("Missing 'params' field",id->valuestring);
         return;
     }
 
@@ -47,26 +43,35 @@ void set_tag_storage(ClientData* data, cJSON* request) {
     if (maxTagIDByteCount)
         tagStorageConfig.maxTagIDByteCount = maxTagIDByteCount->valueint;
 
-    // 设备读取
-    DeviceInterface dev;
-
-    // 发现设备
-    int discovered = discover(modelName->valuestring, &dev);
-    if (-1 == discovered) {
-        send_error_response(data, "Device not found or LOCK");
+    //リーダーに接続したかチェック
+    if (!this->reader) return;
+    if (!(this->reader->isOpen)()) {
+        client->send_error_response(utf16_to_utf8(L"リーダーに接続されていません。"), id->valuestring);
         return;
     }
 
-    int result = dev.set_tag_storage(tagStorageConfig);
+    //使用中かどうかチェック
+    if (this->reader->getUse()) {
+        client->send_error_response(utf16_to_utf8(L"リーダーが使用中です。"), id->valuestring);
+        return;
+    }
+
+    //リーダを利用開始する.
+    this->reader->assign();
+    int result = (this->reader->set_tag_storage)(tagStorageConfig);
+    //リーダを利用終了する.
+    this->reader->release();
+
     if (result != 0) {
-        send_error_response(data, "tagStorageConfig operation failed");
+        client->send_error_response("tagStorageConfig operation failed",id->valuestring);
         return;
     }
     // 生成 JSON 响应
     cJSON* response_json = cJSON_CreateObject();
     cJSON_AddStringToObject(response_json, "status", "success");
+    cJSON_AddStringToObject(response_json, "id", id->valuestring);
     cJSON_AddStringToObject(response_json, "message", "tagStorage configuration updated");
     //对客户端送信
-    send_json_response(data, response_json);
+    client->send_json_response(response_json);
 
 }
